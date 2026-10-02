@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#060B1E">
+<title>Orbit Lab</title>
+<style>
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;width:100%;height:100%;background:#060B1E;color:#E6ECFF;overflow:hidden;font-family:"Avenir Next",Avenir,"Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:rgba(0,0,0,0);-webkit-text-size-adjust:100%;}
+#cv{position:fixed;left:0;top:0;width:100%;height:100%;display:block;touch-action:none;}
+button{font-family:inherit;font-size:15px;font-weight:600;color:#E6ECFF;background:#16204A;border:1px solid #26335E;border-radius:12px;min-height:44px;padding:0 12px;-webkit-appearance:none;appearance:none;cursor:pointer;}
+button:active{background:#22305F;}
+button:focus-visible,select:focus-visible{outline:2px solid #5FE3FF;outline-offset:2px;}
+button.pri{background:#5FE3FF;color:#04122A;border-color:#5FE3FF;}
+button.pri:active{background:#A6F1FF;}
+button.sm{min-height:38px;padding:0 10px;font-size:14px;flex:none;}
+button.warn{color:#FF9A9A;}
+select{font-family:inherit;font-size:15px;font-weight:500;color:#E6ECFF;background:#16204A;border:1px solid #26335E;border-radius:10px;height:38px;padding:0 10px;-webkit-appearance:none;appearance:none;min-width:0;}
+#top{position:fixed;left:0;right:0;top:0;padding:10px 16px 8px 16px;padding-top:calc(env(safe-area-inset-top, 0px) + 10px);display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none;z-index:5;}
+#ttl{font-family:"Avenir Next Condensed","Avenir Next",Avenir,sans-serif;font-weight:700;font-size:26px;line-height:1;}
+#sub{font-size:13px;color:#8A97C2;margin-top:5px;}
+#clock{text-align:right;font-family:"Avenir Next Condensed","Avenir Next",Avenir,sans-serif;font-size:19px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums;}
+#clockL{text-align:right;font-size:12px;color:#8A97C2;margin-top:5px;}
+#dock{position:fixed;left:0;right:0;bottom:0;padding:0 10px 10px 10px;padding-bottom:calc(env(safe-area-inset-bottom, 0px) + 10px);z-index:6;}
+.bar{background:rgba(14,21,51,0.92);border:1px solid #26335E;border-radius:18px;padding:10px;}
+.row{display:flex;align-items:center;}
+.row > *{margin-right:8px;}
+.row > *:last-child{margin-right:0;}
+.row + .row{margin-top:8px;}
+#bPlay{width:76px;flex:none;}
+.spd{flex:1;min-width:0;}
+#spdL,#tiltL{font-size:12px;color:#8A97C2;white-space:nowrap;overflow:hidden;}
+#spdL.lag{color:#FFC94D;}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:30px;background:transparent;margin:0;display:block;}
+input[type=range]::-webkit-slider-runnable-track{height:4px;background:#26335E;border-radius:2px;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:12px;background:#5FE3FF;margin-top:-10px;border:none;}
+#bAdd{flex:1.6;}
+#bScene,#bFit,#bMore{flex:1;}
+#card{display:none;margin-bottom:8px;}
+.ch{display:flex;align-items:center;}
+.cn{flex:1;display:flex;align-items:center;font-family:"Avenir Next Condensed","Avenir Next",Avenir,sans-serif;font-size:22px;font-weight:700;min-width:0;}
+.cn span:last-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ch button{margin-left:6px;}
+.dot{display:inline-block;width:12px;height:12px;border-radius:6px;margin-right:8px;flex:none;}
+#cStatus{font-size:13px;color:#A9B5DD;margin:2px 0 6px 0;}
+.grid{display:flex;}
+.cell{width:25%;padding:2px 4px 2px 0;}
+.v{font-family:"Avenir Next Condensed","Avenir Next",Avenir,sans-serif;font-size:18px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;}
+.l{font-size:11px;color:#8A97C2;margin-top:1px;}
+.ml{font-size:11px;color:#8A97C2;margin:8px 0 4px 0;}
+#cMass{flex:1;}
+#shade{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(3,6,18,0.55);display:none;z-index:19;}
+.sheet{position:fixed;left:0;right:0;bottom:0;max-height:80%;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#0E1533;border-top:1px solid #26335E;border-radius:20px 20px 0 0;padding:16px 16px 16px 16px;padding-bottom:calc(env(safe-area-inset-bottom, 0px) + 16px);z-index:20;display:none;}
+.sh{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.sh h2{margin:0;font-family:"Avenir Next Condensed","Avenir Next",Avenir,sans-serif;font-size:24px;font-weight:700;}
+.objs{display:flex;flex-wrap:wrap;margin:0 -4px;}
+.ob{width:calc(33.333% - 8px);margin:4px;min-height:60px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:6px 10px;text-align:left;}
+.ob .o1{display:flex;align-items:center;font-size:15px;}
+.ob .o2{font-size:11px;color:#8A97C2;font-weight:500;margin-top:3px;}
+.ob.sel{border-color:#5FE3FF;background:#163056;}
+.fld{display:block;font-size:13px;color:#8A97C2;margin:14px 0 6px 0;}
+#orbitSel{width:100%;height:44px;}
+.btns{display:flex;margin-top:12px;}
+.btns button{flex:1;}
+.btns button:first-child{margin-right:8px;}
+.hint{font-size:13px;color:#8A97C2;line-height:1.5;margin:12px 0 0 0;}
+.scene{display:block;width:100%;text-align:left;padding:9px 14px;margin-bottom:8px;min-height:56px;}
+.scene .s1{font-size:16px;}
+.scene .s2{font-size:12px;color:#8A97C2;font-weight:500;margin-top:2px;}
+.tog{display:flex;width:100%;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.tog .st{color:#8A97C2;font-weight:500;}
+.tog.on .st{color:#5FE3FF;}
+#banner{position:fixed;left:10px;right:10px;top:calc(env(safe-area-inset-top, 0px) + 66px);display:none;z-index:8;align-items:center;}
+#bannerT{flex:1;font-size:14px;line-height:1.4;margin-right:10px;}
+#toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top, 0px) + 66px);-webkit-transform:translateX(-50%);transform:translateX(-50%);background:rgba(14,21,51,0.96);border:1px solid #26335E;border-radius:14px;padding:10px 14px;font-size:14px;line-height:1.4;width:88%;max-width:420px;text-align:center;opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:9;}
+@media (prefers-reduced-motion: reduce){#toast{transition:none;}}
+
+#facts{position:fixed;left:0;top:0;right:0;bottom:0;background:#060B1E;z-index:40;display:none;}
+#fScroll{position:absolute;left:0;right:0;top:0;bottom:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 18px 110px 18px;padding-top:calc(env(safe-area-inset-top, 0px) + 56px);}
+#fTopBar{position:absolute;left:0;right:0;top:0;padding:8px 12px;padding-top:calc(env(safe-area-inset-top, 0px) + 8px);display:flex;justify-content:space-between;align-items:center;background:rgba(6,11,30,0.92);z-index:2;}
+#fCount{font-size:13px;color:#8A97C2;}
+#fPlanet{display:block;width:230px;height:230px;margin:0 auto;}
+#fName{font-family:"Avenir Next Condensed","Avenir Next",Avenir,sans-serif;font-size:46px;font-weight:700;line-height:1;margin:6px 0 0 0;text-align:center;}
+#fTag{text-align:center;color:#A9B5DD;font-size:16px;margin:8px 0 20px 0;}
+#fStats{display:flex;flex-wrap:wrap;border-top:1px solid #26335E;}
+.fs{width:50%;padding:10px 8px 10px 0;border-bottom:1px solid #1B2550;}
+.fs .v{font-size:19px;white-space:normal;}
+.fs .l{font-size:12px;}
+#fWeigh{margin:20px 0 6px 0;padding:14px;border-radius:16px;background:#0E1533;border:1px solid #26335E;}
+#fWeigh label{font-size:13px;color:#8A97C2;display:block;margin-bottom:6px;}
+#fWin{font-family:inherit;font-size:16px;color:#E6ECFF;background:#16204A;border:1px solid #26335E;border-radius:10px;height:42px;width:110px;padding:0 10px;}
+#fWout{font-size:16px;margin-top:10px;line-height:1.4;}
+#fWout b{font-family:"Avenir Next Condensed","Avenir Next",Avenir,sans-serif;font-size:26px;}
+.fsec h3{font-family:"Avenir Next Condensed","Avenir Next",Avenir,sans-serif;font-size:24px;font-weight:700;margin:26px 0 8px 0;}
+.fsec ul{margin:0;padding:0 0 0 20px;}
+.fsec li{font-size:16px;line-height:1.55;margin-bottom:10px;color:#D5DCF5;max-width:680px;}
+#fTry{margin-top:24px;padding:14px 16px;border-radius:16px;background:#0E1E3A;border:1px solid #2B5A78;}
+#fTry h3{margin:0 0 6px 0;font-size:18px;color:#5FE3FF;font-family:"Avenir Next Condensed","Avenir Next",Avenir,sans-serif;}
+#fTry p{margin:0;font-size:15px;line-height:1.5;}
+#fNav{position:absolute;left:0;right:0;bottom:0;display:flex;padding:10px 12px;padding-bottom:calc(env(safe-area-inset-bottom, 0px) + 10px);background:rgba(6,11,30,0.94);border-top:1px solid #1B2550;z-index:2;}
+#fNav button{flex:1;}
+#fNav button:first-child{margin-right:8px;}
+</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+
+<div id="top">
+  <div><div id="ttl">Orbit Lab</div><div id="sub">Two-body problem</div></div>
+  <div><div id="clock">0 days</div><div id="clockL">time passed</div></div>
+</div>
+
+<div id="banner" class="bar"><div id="bannerT"></div><button id="bannerX" class="sm">Cancel</button></div>
+<div id="toast"></div>
+
+<div id="dock">
+  <div id="card" class="bar">
+    <div class="ch">
+      <div class="cn"><span class="dot" id="cDot"></span><span id="cName"></span></div>
+      <button class="sm" id="cFacts">Facts</button>
+      <button class="sm" id="cFollow">Follow</button>
+      <button class="sm" id="cClose">Close</button>
+    </div>
+    <div id="cStatus"></div>
+    <div class="grid">
+      <div class="cell"><div class="v" id="v1"></div><div class="l" id="l1"></div></div>
+      <div class="cell"><div class="v" id="v2"></div><div class="l" id="l2"></div></div>
+      <div class="cell"><div class="v" id="v3"></div><div class="l" id="l3"></div></div>
+      <div class="cell"><div class="v" id="v4"></div><div class="l" id="l4"></div></div>
+    </div>
+    <div class="ml">Mass (Earth = 1)</div>
+    <div class="row">
+      <select id="cMass" aria-label="Mass"></select>
+      <button class="sm" id="cDiv">/10</button>
+      <button class="sm" id="cMul">x10</button>
+      <button class="sm warn" id="cRemove">Remove</button>
+    </div>
+  </div>
+  <div class="bar">
+    <div class="row">
+      <button id="bPlay">Pause</button>
+      <div class="spd"><div id="spdL"></div><input type="range" id="spd" min="0" max="100" step="0.5" aria-label="Simulation speed"></div>
+      <div class="spd"><div id="tiltL">Top view</div><input type="range" id="tilt" min="0" max="90" step="1" value="0" aria-label="View tilt"></div>
+    </div>
+    <div class="row">
+      <button id="bAdd" class="pri">Add object</button>
+      <button id="bScene">Scenes</button>
+      <button id="bFit">Fit</button>
+      <button id="bMore">More</button>
+    </div>
+  </div>
+</div>
+
+<div id="shade"></div>
+
+<div id="addSheet" class="sheet">
+  <div class="sh"><h2>Add an object</h2><button class="sm" id="addX">Done</button></div>
+  <div class="objs" id="objGrid"></div>
+  <label class="fld" for="orbitSel">Orbit around</label>
+  <select id="orbitSel"></select>
+  <div class="btns"><button class="pri" id="addOrbit">Add in orbit</button><button id="addPlace">Place by hand</button></div>
+  <p class="hint">Add in orbit gives it its real orbit shape and distance, including how oval it is (eccentricity). The Moon goes around Earth and planets go around the Sun. In the solar system scenes, planets appear where they really are on the date shown. Place by hand lets you touch a spot and drag to aim it yourself.</p>
+</div>
+
+<div id="sceneSheet" class="sheet">
+  <div class="sh"><h2>Scenes</h2><button class="sm" id="sceneX">Done</button></div>
+  <div id="sceneList"></div>
+</div>
+
+<div id="optSheet" class="sheet">
+  <div class="sh"><h2>More</h2><button class="sm" id="optX">Done</button></div>
+  <button class="tog on" data-k="trails"><span>Orbit trails</span><span class="st">On</span></button>
+  <button class="tog on" data-k="outlines"><span>Orbit outlines (predicted path)</span><span class="st">On</span></button>
+  <button class="tog on" data-k="grid"><span>Distance rings and height lines</span><span class="st">On</span></button>
+  <button class="tog on" data-k="labels"><span>Names</span><span class="st">On</span></button>
+  <button class="tog on" data-k="cm"><span>Center of mass marker</span><span class="st">On</span></button>
+  <button class="tog on" data-k="merge"><span>Objects merge when they crash</span><span class="st">On</span></button>
+  <button id="clearTr" style="width:100%;">Clear trails</button>
+  <button id="optFacts" style="width:100%;margin-top:8px;">Browse planet facts</button>
+  <p class="hint">Masses, gravity and orbit tilts are real, in full 3D. Distances and sizes are squeezed so the Moon and Neptune fit on one screen: each orbit is drawn around the body it circles, at a compressed distance. Drag two fingers up or down, or use the Tilt slider, to look from the side. Height lines drop from each object to the flat plane of Earth's orbit, so you can see what rides above or below it.</p>
+</div>
+
+<div id="facts" role="dialog" aria-label="Facts">
+  <div id="fTopBar"><span id="fCount"></span><button class="sm" id="fClose">Close</button></div>
+  <div id="fScroll">
+    <canvas id="fPlanet" width="230" height="230"></canvas>
+    <h1 id="fName"></h1>
+    <p id="fTag"></p>
+    <div id="fStats"></div>
+    <div id="fWeigh"><label for="fWin">Your weight on Earth (pounds)</label><input id="fWin" type="number" inputmode="decimal" value="150" min="0"><div id="fWout"></div></div>
+    <div id="fSecs"></div>
+    <div id="fTry"><h3>Try it in Orbit Lab</h3><p id="fTryP"></p></div>
+  </div>
+  <div id="fNav"><button id="fPrev">Previous</button><button id="fNext">Next</button></div>
+</div>
+
+<script>
+(function(){
+'use strict';
+var G=39.47841760435743, EM=3.0034896e-6, KMS=4.740470464;
+var P=0.4, IP=2.5, R0=0.03, ETA=0.006, MAXSTEPS=3000, EPS2=1e-14, TRAILMAX=700, MAXBODIES=30;
+var TAU=Math.PI*2, DEG=Math.PI/180;
+
+var CAT=[
+ {k:'sun',n:'Sun',m:333000,r:696000,c:'#FFC94D',a:0,e:0,i:0,O:0,w:0,L:0,p:''},
+ {k:'mercury',n:'Mercury',m:0.0553,r:2440,c:'#B9AEA3',a:0.387,e:0.2056,i:7.005,O:48.33,w:77.46,L:252.25,p:'sun'},
+ {k:'venus',n:'Venus',m:0.815,r:6052,c:'#F2D59A',a:0.723,e:0.0068,i:3.395,O:76.68,w:131.6,L:181.98,p:'sun'},
+ {k:'earth',n:'Earth',m:1,r:6371,c:'#4DA3FF',a:1,e:0.0167,i:0,O:0,w:102.94,L:100.46,p:'sun'},
+ {k:'moon',n:'Moon',m:0.0123,r:1737,c:'#D7DCE6',a:0.00257,e:0.0549,i:5.145,O:0,w:0,L:0,p:'earth'},
+ {k:'mars',n:'Mars',m:0.107,r:3390,c:'#FF6B3D',a:1.524,e:0.0934,i:1.85,O:49.56,w:336.06,L:355.45,p:'sun'},
+ {k:'jupiter',n:'Jupiter',m:317.8,r:69911,c:'#E8B07A',a:5.203,e:0.0485,i:1.303,O:100.46,w:14.33,L:34.40,p:'sun'},
+ {k:'saturn',n:'Saturn',m:95.2,r:58232,c:'#F3D27A',a:9.537,e:0.0555,i:2.489,O:113.67,w:93.06,L:49.95,p:'sun'},
+ {k:'uranus',n:'Uranus',m:14.5,r:25362,c:'#8FE8DF',a:19.19,e:0.0463,i:0.773,O:74.01,w:173.0,L:313.24,p:'sun'},
+ {k:'neptune',n:'Neptune',m:17.1,r:24622,c:'#5B7CFF',a:30.07,e:0.0090,i:1.77,O:131.78,w:48.12,L:304.88,p:'sun'},
+ {k:'pluto',n:'Pluto',m:0.0022,r:1188,c:'#E6C7B3',a:39.48,e:0.2488,i:17.14,O:110.30,w:224.07,L:238.93,p:'sun'}
+];
+var sceneYear=null,MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+var NOW=(function(){var d=new Date();return d.getFullYear()+(d.getMonth()+(d.getDate()-1)/31)/12;})();
+var CK={};
+(function(){for(var i=0;i<CAT.length;i++){CK[CAT[i].k]=CAT[i];}})();
+
+function $(id){return document.getElementById(id);}
+var cv=$('cv'),ctx=cv.getContext('2d'),W=0,H=0,DPR=1,stars=null;
+var bodies=[],nextId=1,simTime=0,lastTmin=1,thr2=[],pendI=-1,pendJ=-1;
+var running=true,rate=0.5,lagging=false,placing=null,wasRunning=true;
+var opt={trails:true,outlines:true,grid:true,labels:true,cm:true,merge:true};
+var selId=-1,followId=-1,selRefId=-1,addKey='earth';
+var cam={x:0,y:0,s:120,auto:true},vcx=0,vcy=0,topH=70,dockH=150;
+var tilt=0,cosT=1,sinT=0;
+var bary={x:0,y:0,z:0},flashes=[],lastN=-1;
+
+/* ---------- helpers ---------- */
+function dispR(rk){return R0*Math.pow(rk/6371,0.3);}
+function comp(dx,dy,dz){var d=Math.sqrt(dx*dx+dy*dy+dz*dz);if(d<1e-300){return [0,0,0];}var s=Math.pow(d,P)/d;return [dx*s,dy*s,dz*s];}
+function uncomp(X,Y,Z){var D=Math.sqrt(X*X+Y*Y+Z*Z);if(D<1e-300){return [0,0,0];}var s=Math.pow(D,IP)/D;return [X*s,Y*s,Z*s];}
+function PV(Y,Z){return Y*cosT+Z*sinT;}
+function DEP(Y,Z){return -Y*sinT+Z*cosT;}
+function SX(X){return vcx+(X-cam.x)*cam.s;}
+function SY(Y,Z){return vcy-(Y*cosT+Z*sinT-cam.y)*cam.s;}
+function s2w(x,y){return [cam.x+(x-vcx)/cam.s,cam.y-(y-vcy)/cam.s];}
+function hexA(h,a){var r=parseInt(h.substr(1,2),16),g=parseInt(h.substr(3,2),16),b=parseInt(h.substr(5,2),16);return 'rgba('+r+','+g+','+b+','+a+')';}
+function commas(x){return String(Math.round(x)).replace(/\B(?=(\d{3})+(?!\d))/g,',');}
+function fmtMass(mE){if(mE>=1000){return commas(mE);}return String(Number(mE.toPrecision(3)));}
+function fmtDist(au){if(au<0.02){return commas(au*149597870.7)+' km';}if(au<10){return au.toFixed(3)+' AU';}return au.toFixed(1)+' AU';}
+function fmtSpeed(k){if(k>=10){return k.toFixed(1);}if(k>=1){return k.toFixed(2);}return String(Number(k.toPrecision(2)));}
+function fmtTime(yr){var d=yr*365.25;if(d<1){return (d*24).toFixed(1)+' hours';}if(d<730){return (d<10?d.toFixed(1):String(Math.round(d)))+' days';}if(yr<100){return yr.toFixed(2)+' years';}return commas(yr)+' years';}
+function theName(n){return (n==='Sun'||n==='Moon')?'the '+n:n;}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function uniqueName(n){var used={},i,k=2;for(i=0;i<bodies.length;i++){used[bodies[i].name]=1;}if(!used[n]){return n;}while(used[n+' '+k]){k++;}return n+' '+k;}
+function byId(id){for(var i=0;i<bodies.length;i++){if(bodies[i].id===id){return bodies[i];}}return null;}
+function heaviest(){var h=null,i;for(i=0;i<bodies.length;i++){if(!h||bodies[i].m>h.m){h=bodies[i];}}return h;}
+function dst(a,b){var dx=a.x-b.x,dy=a.y-b.y,dz=a.z-b.z;return Math.sqrt(dx*dx+dy*dy+dz*dz);}
+function makeBody(cat,x,y,z,vx,vy,vz){return {id:nextId++,kind:cat.k,name:uniqueName(cat.n),m:cat.m*EM,rk:cat.r,dr:dispR(cat.r),c:cat.c,x:x,y:y,z:z,vx:vx,vy:vy,vz:vz,ax:0,ay:0,az:0,pi:-1,hill:Infinity,dX:0,dY:0,dZ:0,trail:[],tpid:-2};}
+function computeBary(){var M=0,x=0,y=0,z=0,i,b;for(i=0;i<bodies.length;i++){b=bodies[i];M+=b.m;x+=b.m*b.x;y+=b.m*b.y;z+=b.m*b.z;}if(M>0){bary.x=x/M;bary.y=y/M;bary.z=z/M;}else{bary.x=0;bary.y=0;bary.z=0;}}
+function maxForceAt(x,y,z,skip){var best=-1,bf=0,i,b,dx,dy,dz,f;for(i=0;i<bodies.length;i++){if(i===skip){continue;}b=bodies[i];dx=b.x-x;dy=b.y-y;dz=b.z-z;f=b.m/(dx*dx+dy*dy+dz*dz+1e-30);if(f>bf){bf=f;best=i;}}return best;}
+
+/* ---------- physics ---------- */
+function accel(){
+  var n=bodies.length,i,j,a,b,dx,dy,dz,d2,d,inv,ts,dvx,dvy,dvz,v2,tmin=1e9;
+  for(i=0;i<n;i++){bodies[i].ax=0;bodies[i].ay=0;bodies[i].az=0;}
+  for(i=0;i<n;i++){a=bodies[i];
+    for(j=i+1;j<n;j++){b=bodies[j];
+      dx=b.x-a.x;dy=b.y-a.y;dz=b.z-a.z;d2=dx*dx+dy*dy+dz*dz;
+      if(opt.merge&&pendI<0&&d2<thr2[i*n+j]){pendI=i;pendJ=j;}
+      d2+=EPS2;d=Math.sqrt(d2);inv=G/(d2*d);
+      a.ax+=inv*b.m*dx;a.ay+=inv*b.m*dy;a.az+=inv*b.m*dz;
+      b.ax-=inv*a.m*dx;b.ay-=inv*a.m*dy;b.az-=inv*a.m*dz;
+      ts=Math.sqrt(d2*d/(G*(a.m+b.m)));if(ts<tmin){tmin=ts;}
+      dvx=b.vx-a.vx;dvy=b.vy-a.vy;dvz=b.vz-a.vz;v2=dvx*dvx+dvy*dvy+dvz*dvz;
+      if(v2>0){ts=d/Math.sqrt(v2);if(ts<tmin){tmin=ts;}}
+    }
+  }
+  return tmin;
+}
+function step(dt){
+  var n=bodies.length,i,b,h=0.5*dt;
+  for(i=0;i<n;i++){b=bodies[i];b.vx+=h*b.ax;b.vy+=h*b.ay;b.vz+=h*b.az;b.x+=dt*b.vx;b.y+=dt*b.vy;b.z+=dt*b.vz;}
+  lastTmin=accel();
+  for(i=0;i<n;i++){b=bodies[i];b.vx+=h*b.ax;b.vy+=h*b.ay;b.vz+=h*b.az;}
+}
+function rebuild(){
+  var n=bodies.length,i,j,t;
+  thr2=new Array(n*n);
+  for(i=0;i<n;i++){for(j=i+1;j<n;j++){t=Math.pow(bodies[i].dr+bodies[j].dr,IP);thr2[i*n+j]=t*t;}}
+  pendI=-1;pendJ=-1;
+  layout();
+  lastTmin=accel();
+}
+function doMerge(i,j){
+  var a=bodies[i],b=bodies[j],big,sm,M;
+  if(a.m>=b.m){big=a;sm=b;}else{big=b;sm=a;}
+  M=a.m+b.m;
+  big.x=(a.x*a.m+b.x*b.m)/M;big.y=(a.y*a.m+b.y*b.m)/M;big.z=(a.z*a.m+b.z*b.m)/M;
+  big.vx=(a.vx*a.m+b.vx*b.m)/M;big.vy=(a.vy*a.m+b.vy*b.m)/M;big.vz=(a.vz*a.m+b.vz*b.m)/M;
+  big.m=M;big.rk=Math.pow(a.rk*a.rk*a.rk+b.rk*b.rk*b.rk,1/3);big.dr=dispR(big.rk);
+  flashes.push({id:big.id,t:0,c:sm.c});
+  bodies.splice(bodies.indexOf(sm),1);
+  if(selId===sm.id){selId=big.id;}
+  if(followId===sm.id){followId=big.id;}
+  toast(sm.name+' crashed into '+theName(big.name)+' and merged.');
+  rebuild();
+  showCard();
+}
+function advance(T){
+  var done=0,steps=0,dt,since=0;
+  while(done<T&&steps<MAXSTEPS){
+    dt=ETA*lastTmin;if(dt<1e-7){dt=1e-7;}if(dt>T-done){dt=T-done;}
+    step(dt);done+=dt;steps++;
+    if(pendI>=0){doMerge(pendI,pendJ);}
+    since++;if(since>=6){sampleTrails();since=0;}
+  }
+  if(since>0||steps===0){sampleTrails();}
+  simTime+=done;
+  lagging=done<T*0.98;
+}
+
+/* ---------- display mapping ---------- */
+function layout(){
+  var n=bodies.length,i,j,h=-1,h2=-1,b,p,c,best,pi,hill=[],ord=[];
+  computeBary();
+  for(i=0;i<n;i++){if(h<0||bodies[i].m>bodies[h].m){h2=h;h=i;}else if(h2<0||bodies[i].m>bodies[h2].m){h2=i;}}
+  for(j=0;j<n;j++){b=bodies[j];
+    if(j===h){
+      if(h2<0||b.m>100*bodies[h2].m){hill[j]=Infinity;}
+      else{hill[j]=dst(b,bodies[h2])*Math.pow(b.m/(3*bodies[h2].m),1/3);}
+    }else{hill[j]=dst(b,bodies[h])*Math.pow(b.m/(3*bodies[h].m),1/3);}
+    b.hill=hill[j];
+  }
+  for(i=0;i<n;i++){b=bodies[i];pi=-1;best=Infinity;
+    for(j=0;j<n;j++){if(j===i){continue;}p=bodies[j];if(p.m<10*b.m){continue;}
+      if(dst(b,p)<hill[j]&&(pi<0||hill[j]<best)){best=hill[j];pi=j;}
+    }
+    b.pi=pi;
+  }
+  for(i=0;i<n;i++){ord.push(i);}
+  ord.sort(function(x,y){return bodies[y].m-bodies[x].m;});
+  for(i=0;i<n;i++){b=bodies[ord[i]];
+    if(b.pi<0){c=comp(b.x-bary.x,b.y-bary.y,b.z-bary.z);b.dX=c[0];b.dY=c[1];b.dZ=c[2];}
+    else{p=bodies[b.pi];c=comp(b.x-p.x,b.y-p.y,b.z-p.z);b.dX=p.dX+c[0];b.dY=p.dY+c[1];b.dZ=p.dZ+c[2];}
+  }
+}
+function sampleTrails(){
+  if(!opt.trails){return;}
+  var n=bodies.length,i,b,p,c,pid,t,L,minD=1.2/cam.s;
+  computeBary();
+  for(i=0;i<n;i++){b=bodies[i];
+    if(b.pi>=0&&b.pi<n){p=bodies[b.pi];c=comp(b.x-p.x,b.y-p.y,b.z-p.z);pid=p.id;}
+    else{c=comp(b.x-bary.x,b.y-bary.y,b.z-bary.z);pid=-1;}
+    if(b.tpid!==pid){b.trail=[];b.tpid=pid;}
+    t=b.trail;L=t.length;
+    if(L<3||Math.abs(c[0]-t[L-3])+Math.abs(c[1]-t[L-2])+Math.abs(c[2]-t[L-1])>minD){
+      t.push(c[0],c[1],c[2]);
+      if(t.length>TRAILMAX*3){t.splice(0,t.length-TRAILMAX*3);}
+    }
+  }
+}
+function clearTrails(){for(var i=0;i<bodies.length;i++){bodies[i].trail=[];bodies[i].tpid=-2;}}
+
+/* ---------- orbit info ---------- */
+function infoFor(b){
+  var i=bodies.indexOf(b),ref=-1,r,rx,ry,rz,vx,vy,vz,d,v2,mu,E,hx,hy,hz,hm,e,T=-1,a,M,px,py,pz,k,inc;
+  if(b.pi>=0){ref=b.pi;}
+  else{
+    ref=maxForceAt(b.x,b.y,b.z,i);
+    if(ref<0){return {mode:'alone'};}
+    if(bodies[ref].m*10<=b.m){
+      computeBary();M=0;px=0;py=0;pz=0;
+      for(k=0;k<bodies.length;k++){M+=bodies[k].m;px+=bodies[k].m*bodies[k].vx;py+=bodies[k].m*bodies[k].vy;pz+=bodies[k].m*bodies[k].vz;}
+      rx=b.x-bary.x;ry=b.y-bary.y;rz=b.z-bary.z;vx=b.vx-px/M;vy=b.vy-py/M;vz=b.vz-pz/M;
+      return {mode:'anchor',dist:Math.sqrt(rx*rx+ry*ry+rz*rz),speed:Math.sqrt(vx*vx+vy*vy+vz*vz),share:b.m/M};
+    }
+  }
+  r=bodies[ref];
+  rx=b.x-r.x;ry=b.y-r.y;rz=b.z-r.z;vx=b.vx-r.vx;vy=b.vy-r.vy;vz=b.vz-r.vz;
+  d=Math.sqrt(rx*rx+ry*ry+rz*rz);v2=vx*vx+vy*vy+vz*vz;mu=G*(b.m+r.m);E=v2/2-mu/d;
+  hx=ry*vz-rz*vy;hy=rz*vx-rx*vz;hz=rx*vy-ry*vx;hm=Math.sqrt(hx*hx+hy*hy+hz*hz);
+  e=Math.sqrt(Math.max(0,1+2*E*hm*hm/(mu*mu)));
+  if(E<0){a=-mu/(2*E);T=TAU*Math.sqrt(a*a*a/mu);}
+  inc=hm>0?Math.acos(Math.max(-1,Math.min(1,hz/hm)))/DEG:0;
+  return {mode:'orbit',ref:r,dist:d,speed:Math.sqrt(v2),bound:E<0,T:T,e:e,a:a,inc:inc,mutual:(r.m<10*b.m)};
+}
+
+/* ---------- orbits and scenes ---------- */
+function kepler(M,e){var E=(e<0.8)?M:Math.PI,i;for(i=0;i<40;i++){E=E-(E-e*Math.sin(E)-M)/(1-e*Math.cos(E));}return E;}
+function orient(x,y,inc,node,om){
+  var co=Math.cos(om),so=Math.sin(om),x1=x*co-y*so,y1=x*so+y*co,ci=Math.cos(inc),si=Math.sin(inc),y2=y1*ci,z2=y1*si,cn=Math.cos(node),sn=Math.sin(node);
+  return [x1*cn-y2*sn,x1*sn+y2*cn,z2];
+}
+function addOrbit(key,ref,a,e,inc,node,om,M){
+  var cat=CK[key],m=cat.m*EM,b,mu,E,cE,sE,q,n,den,p,v;
+  if(!ref){b=makeBody(cat,0,0,0,0,0,0);bodies.push(b);return b;}
+  mu=G*(ref.m+m);E=kepler(M,e);cE=Math.cos(E);sE=Math.sin(E);q=Math.sqrt(1-e*e);n=Math.sqrt(mu/(a*a*a));den=1-e*cE;
+  p=orient(a*(cE-e),a*q*sE,inc,node,om);v=orient(-a*n*sE/den,a*n*q*cE/den,inc,node,om);
+  b=makeBody(cat,ref.x+p[0],ref.y+p[1],ref.z+p[2],ref.vx+v[0],ref.vy+v[1],ref.vz+v[2]);
+  bodies.push(b);return b;
+}
+function elemsFor(c,ref,yr){
+  if(ref.kind===c.p&&c.p==='sun'){
+    return [c.i*DEG,c.O*DEG,(c.w-c.O)*DEG,(yr!==null)?(c.L+360*(yr-2000)/Math.pow(c.a,1.5)-c.w)*DEG:Math.random()*TAU];
+  }
+  return [c.i*DEG,Math.random()*TAU,Math.random()*TAU,Math.random()*TAU];
+}
+function put(key,ref){
+  var c=CK[key],el;
+  if(!ref){return addOrbit(key,null);}
+  el=elemsFor(c,ref,sceneYear);
+  return addOrbit(key,ref,c.a,c.e,el[0],el[1],el[2],el[3]);
+}
+function centerSystem(){
+  var M=0,x=0,y=0,z=0,vx=0,vy=0,vz=0,i,b;
+  for(i=0;i<bodies.length;i++){b=bodies[i];M+=b.m;x+=b.m*b.x;y+=b.m*b.y;z+=b.m*b.z;vx+=b.m*b.vx;vy+=b.m*b.vy;vz+=b.m*b.vz;}
+  if(M<=0){return;}
+  for(i=0;i<bodies.length;i++){b=bodies[i];b.x-=x/M;b.y-=y/M;b.z-=z/M;b.vx-=vx/M;b.vy-=vy/M;b.vz-=vz/M;}
+}
+var SCENES=[
+ {n:'Sun and Earth',d:'Two-body problem: a planet and its star',rate:0.5,year:NOW,f:function(){var s=put('sun',null);put('earth',s);}},
+ {n:'Earth and Moon',d:'Two-body problem on a smaller scale. The Moon\'s orbit is tilted 5 degrees',rate:0.04,f:function(){var e=put('earth',null);put('moon',e);}},
+ {n:'Binary stars',d:'Two equal stars circling a shared center',rate:0.4,f:function(){
+   var c=CK.sun,v=0.8*Math.sqrt(G*2*c.m*EM/2)/2;
+   bodies.push(makeBody(c,-1,0,0,0,-v,0));bodies.push(makeBody(c,1,0,0,0,v,0));}},
+ {n:'Sun, Earth and Moon',d:'Three-body problem',rate:0.25,year:NOW,f:function(){var s=put('sun',null),e=put('earth',s);put('moon',e);}},
+ {n:'Sun, Earth and Jupiter',d:'Three-body problem with a giant planet',rate:2,year:NOW,f:function(){var s=put('sun',null);put('earth',s);put('jupiter',s);}},
+ {n:'Inner solar system',d:'Mercury to Mars, where they really are today',rate:0.5,year:NOW,f:function(){var s=put('sun',null);put('mercury',s);put('venus',s);var e=put('earth',s);put('moon',e);put('mars',s);}},
+ {n:'Whole solar system',d:'Every planet, the Moon and Pluto, where they really are today',rate:5,year:NOW,f:function(){var s=put('sun',null),k=['mercury','venus','earth','mars','jupiter','saturn','uranus','neptune','pluto'],i,e=null,b;for(i=0;i<k.length;i++){b=put(k[i],s);if(k[i]==='earth'){e=b;}}put('moon',e);}},
+ {n:'Pluto crosses Neptune',d:'Real 3D orbits starting in 1930. Watch Pluto slip inside Neptune\'s path from 1979 to 1999 while riding far above it',rate:3,year:1930,tilt:65,f:function(){var s=put('sun',null);put('uranus',s);put('neptune',s);put('pluto',s);}},
+ {n:'Empty space',d:'Start from nothing and add your own objects',rate:0.5,f:function(){}}
+];
+function loadScene(i){
+  var sc=SCENES[i];
+  sceneYear=(sc.year===undefined)?null:sc.year;
+  bodies=[];nextId=1;simTime=0;flashes=[];selId=-1;followId=-1;selRefId=-1;
+  sc.f();centerSystem();rebuild();clearTrails();
+  if(sc.tilt!==undefined){setTilt(sc.tilt);}
+  setRate(sc.rate);cam.auto=true;measure();autoCam(100);
+  showCard();
+}
+
+/* ---------- adding ---------- */
+function addInOrbit(key,target){
+  if(bodies.length>=MAXBODIES){toast('The limit is '+MAXBODIES+' objects.');return;}
+  var cat=CK[key],ref=null,a,i,b,d,maxd=0,t,e=cat.e,el,real=false,dup=false,msg,yr=null;
+  if(bodies.length===0){b=makeBody(cat,0,0,0,0,0,0);bodies.push(b);afterAdd(b,cat.n+' is in place. Add another object to give it something to orbit.');return;}
+  if(target==='auto'){
+    if(cat.p){for(i=0;i<bodies.length;i++){if(bodies[i].kind===cat.p&&(!ref||bodies[i].m>ref.m)){ref=bodies[i];}}}
+    if(!ref){ref=heaviest();}
+  }else{ref=byId(parseInt(target,10))||heaviest();}
+  for(i=0;i<bodies.length;i++){if(bodies[i].kind===key){dup=true;}}
+  if(cat.a>0){a=cat.a;}
+  else{e=0;for(i=0;i<bodies.length;i++){b=bodies[i];if(b===ref){continue;}d=dst(b,ref);if(d>maxd){maxd=d;}}a=Math.max(1,maxd*1.6);}
+  t=Math.pow(dispR(cat.r)+ref.dr,IP);if(a*(1-e)<3*t){a=3*t/(1-e);}
+  if(cat.a<=0){el=[0,0,Math.random()*TAU,0];}
+  else{
+    if(sceneYear!==null&&cat.p==='sun'&&ref.kind==='sun'&&!dup&&a===cat.a){yr=sceneYear+simTime;real=true;}
+    el=elemsFor(cat,ref,yr);
+  }
+  b=addOrbit(key,ref,a,e,el[0],el[1],el[2],el[3]);
+  msg=real?b.name+' added where it really is on this date.':b.name+' added in orbit around '+theName(ref.name)+'.';
+  if(e>0.05){msg+=' Its real orbit is an oval (eccentricity '+e.toFixed(2)+').';}
+  if(cat.i>1&&cat.a>0){msg+=' It is tilted '+cat.i.toFixed(1)+' degrees.';}
+  afterAdd(b,msg);
+}
+function afterAdd(b,msg){rebuild();selId=b.id;closeSheets();showCard();toast(msg);}
+
+/* ---------- placing by hand ---------- */
+function planeHit(u,v,Zp){if(cosT<0.2){return null;}return [u,(v-Zp*sinT)/cosT,Zp];}
+function placeRegion(u,v,m){
+  var n=bodies.length,i,b,bi=-1,best=Infinity,hd,w,hitw=null,dx,dy,c,rx,ry,rz;
+  for(i=0;i<n;i++){b=bodies[i];if(b.m<10*m){continue;}
+    w=planeHit(u,v,b.dZ);if(!w){return null;}
+    hd=Math.pow(b.hill,P);dx=w[0]-b.dX;dy=w[1]-b.dY;
+    if(Math.sqrt(dx*dx+dy*dy)<hd&&(bi<0||b.hill<best)){best=b.hill;bi=i;hitw=w;}
+  }
+  if(bi>=0){b=bodies[bi];c=uncomp(hitw[0]-b.dX,hitw[1]-b.dY,0);rx=b.x+c[0];ry=b.y+c[1];rz=b.z;}
+  else{w=planeHit(u,v,0);if(!w){return null;}computeBary();c=uncomp(w[0],w[1],0);rx=bary.x+c[0];ry=bary.y+c[1];rz=bary.z;}
+  return {x:rx,y:ry,z:rz,ref:(bi>=0?bi:maxForceAt(rx,ry,rz,-1))};
+}
+function placeVelocity(pl){
+  var r=bodies[pl.ref],rx,ry,rz,d,dxy,vc,L,sp,ux,uy,um;
+  pl.vc=0;
+  if(!r){return [0,0,0];}
+  rx=pl.x-r.x;ry=pl.y-r.y;rz=pl.z-r.z;d=Math.sqrt(rx*rx+ry*ry+rz*rz)||1e-9;
+  vc=Math.sqrt(G*(r.m+pl.m)/d);pl.vc=vc;
+  L=Math.sqrt(pl.dx*pl.dx+pl.dy*pl.dy);
+  if(L<12){dxy=Math.sqrt(rx*rx+ry*ry)||1e-9;return [r.vx-vc*ry/dxy,r.vy+vc*rx/dxy,r.vz];}
+  sp=vc*L/100;ux=pl.dx;uy=-pl.dy/Math.max(cosT,0.2);um=Math.sqrt(ux*ux+uy*uy)||1;
+  return [r.vx+sp*ux/um,r.vy+sp*uy/um,r.vz];
+}
+function startPlacing(){
+  if(bodies.length>=MAXBODIES){toast('The limit is '+MAXBODIES+' objects.');return;}
+  closeSheets();
+  placing={key:addKey,stage:'wait'};
+  wasRunning=running;running=false;updPlay();
+  $('bannerT').innerHTML='Touch where '+esc(theName(CK[addKey].n))+' should go, then drag to aim. A longer drag means a faster launch. A quick tap gives a circular orbit.';
+  $('banner').style.display='flex';$('dock').style.display='none';
+}
+function endPlacing(){placing=null;$('banner').style.display='none';$('dock').style.display='block';running=wasRunning;updPlay();}
+function placeStart(x,y){
+  var w=s2w(x,y),cat=CK[placing.key],m=cat.m*EM,r=placeRegion(w[0],w[1],m);
+  if(!r){toast('The view is tilted too far. Tilt back toward a top view to place by hand.');return;}
+  placing.stage='drag';placing.ax=x;placing.ay=y;placing.dx=0;placing.dy=0;
+  placing.x=r.x;placing.y=r.y;placing.z=r.z;placing.ref=r.ref;placing.m=m;placing.dr=dispR(cat.r);
+  placing.gx=-99;placing.gy=-99;
+  updGhost();
+}
+function placeMove(x,y){
+  placing.dx=x-placing.ax;placing.dy=y-placing.ay;
+  if(Math.abs(placing.dx-placing.gx)+Math.abs(placing.dy-placing.gy)>3){updGhost();}
+}
+function updGhost(){
+  var v=placeVelocity(placing);placing.v=v;placing.gx=placing.dx;placing.gy=placing.dy;
+  placing.ghost=(placing.ref>=0)?ghostPath(placing.x,placing.y,placing.z,v,placing.m,placing.dr,placing.ref):null;
+}
+function placeEnd(){
+  var cat=CK[placing.key],v=placeVelocity(placing),L=Math.sqrt(placing.dx*placing.dx+placing.dy*placing.dy);
+  var b=makeBody(cat,placing.x,placing.y,placing.z,v[0],v[1],v[2]),ref=bodies[placing.ref],msg,dv;
+  bodies.push(b);
+  endPlacing();
+  msg=b.name+' launched.';
+  if(ref){dv=Math.sqrt((v[0]-ref.vx)*(v[0]-ref.vx)+(v[1]-ref.vy)*(v[1]-ref.vy)+(v[2]-ref.vz)*(v[2]-ref.vz));
+    msg=(L<12)?b.name+' added in a circular orbit around '+theName(ref.name)+'.':b.name+' launched at '+fmtSpeed(dv*KMS)+' km/s past '+theName(ref.name)+'.';}
+  afterAdd(b,msg);
+}
+function ghostPath(px,py,pz,v,m,dr,refIdx){
+  var n=bodies.length,N=n+1,X=[],Y=[],Z=[],VX=[],VY=[],VZ=[],M=[],AX=[],AY=[],AZ=[],TH=[],i,b,t;
+  for(i=0;i<n;i++){b=bodies[i];X.push(b.x);Y.push(b.y);Z.push(b.z);VX.push(b.vx);VY.push(b.vy);VZ.push(b.vz);M.push(b.m);AX.push(0);AY.push(0);AZ.push(0);t=Math.pow(b.dr+dr,IP);TH.push(t*t);}
+  X.push(px);Y.push(py);Z.push(pz);VX.push(v[0]);VY.push(v[1]);VZ.push(v[2]);M.push(m);AX.push(0);AY.push(0);AZ.push(0);
+  var r=bodies[refIdx],rx=px-r.x,ry=py-r.y,rz=pz-r.z,rvx=v[0]-r.vx,rvy=v[1]-r.vy,rvz=v[2]-r.vz;
+  var d=Math.sqrt(rx*rx+ry*ry+rz*rz),mu=G*(m+r.m),v2=rvx*rvx+rvy*rvy+rvz*rvz,E=v2/2-mu/d,T,a;
+  if(E<0){a=-mu/(2*E);T=TAU*Math.sqrt(a*a*a/mu)*1.03;}else{T=8*d/Math.sqrt(v2);}
+  if(T>600){T=600;}
+  var hit=false;
+  function acc(){
+    var tmin=1e9,i2,j,dx,dy,dz,d2,dd,inv,ts,dvx,dvy,dvz,w;
+    for(i2=0;i2<N;i2++){AX[i2]=0;AY[i2]=0;AZ[i2]=0;}
+    for(i2=0;i2<N;i2++){for(j=i2+1;j<N;j++){
+      dx=X[j]-X[i2];dy=Y[j]-Y[i2];dz=Z[j]-Z[i2];d2=dx*dx+dy*dy+dz*dz;
+      if(j===n&&opt.merge&&d2<TH[i2]){hit=true;}
+      d2+=EPS2;dd=Math.sqrt(d2);inv=G/(d2*dd);
+      AX[i2]+=inv*M[j]*dx;AY[i2]+=inv*M[j]*dy;AZ[i2]+=inv*M[j]*dz;
+      AX[j]-=inv*M[i2]*dx;AY[j]-=inv*M[i2]*dy;AZ[j]-=inv*M[i2]*dz;
+      if(j===n){ts=Math.sqrt(d2*dd/(G*(M[i2]+M[j])));if(ts<tmin){tmin=ts;}
+        dvx=VX[j]-VX[i2];dvy=VY[j]-VY[i2];dvz=VZ[j]-VZ[i2];w=dvx*dvx+dvy*dvy+dvz*dvz;if(w>0){ts=dd/Math.sqrt(w);if(ts<tmin){tmin=ts;}}}
+    }}
+    return tmin;
+  }
+  var tmin=acc(),tt=0,steps=0,dt,h,pts=[],c,lx,ly,lz,minD=2/cam.s;
+  c=comp(rx,ry,rz);pts.push(c[0],c[1],c[2]);lx=c[0];ly=c[1];lz=c[2];
+  while(tt<T&&steps<3000&&!hit){
+    dt=0.01*tmin;if(dt>T-tt){dt=T-tt;}h=0.5*dt;
+    for(i=0;i<N;i++){VX[i]+=h*AX[i];VY[i]+=h*AY[i];VZ[i]+=h*AZ[i];X[i]+=dt*VX[i];Y[i]+=dt*VY[i];Z[i]+=dt*VZ[i];}
+    tmin=acc();
+    for(i=0;i<N;i++){VX[i]+=h*AX[i];VY[i]+=h*AY[i];VZ[i]+=h*AZ[i];}
+    tt+=dt;steps++;
+    c=comp(X[n]-X[refIdx],Y[n]-Y[refIdx],Z[n]-Z[refIdx]);
+    if(Math.abs(c[0]-lx)+Math.abs(c[1]-ly)+Math.abs(c[2]-lz)>minD||hit){pts.push(c[0],c[1],c[2]);lx=c[0];ly=c[1];lz=c[2];}
+  }
+  return {pts:pts,hit:hit,bound:E<0};
+}
+
+/* ---------- camera ---------- */
+function measure(){
+  if(placing){return;}
+  topH=$('top').offsetHeight;
+  dockH=$('dock').offsetHeight;
+  vcx=W/2;vcy=(topH+(H-dockH))/2;
+}
+function setTilt(d){
+  d=Math.max(0,Math.min(90,d));
+  var Yc=(cosT>0.05)?cam.y/cosT:cam.y;
+  tilt=d;cosT=Math.cos(d*DEG);sinT=Math.sin(d*DEG);
+  if(!cam.auto&&followId<0){cam.y=Yc*cosT;}
+  $('tilt').value=Math.round(d);
+  $('tiltL').innerHTML=(d<0.5?'Top view':d>89.5?'Edge-on':'Tilt '+Math.round(d)+'&deg;');
+}
+function autoCam(dt){
+  var n=bodies.length,k=1-Math.exp(-dt*5),i,b,p,c,cr,u,v,minX=0,maxX=0,minY=0,maxY=0,hx,hy,s,top,bot,sq=Math.max(cosT,0.25);
+  function inc(x,y){if(x<minX){minX=x;}if(x>maxX){maxX=x;}if(y<minY){minY=y;}if(y>maxY){maxY=y;}}
+  if(followId>=0){b=byId(followId);if(!b){followId=-1;}else{cam.x+=(b.dX-cam.x)*k;cam.y+=(PV(b.dY,b.dZ)-cam.y)*k;}}
+  if(cam.auto&&n>0){
+    for(i=0;i<n;i++){b=bodies[i];cr=b.dr*2.5;u=b.dX;v=PV(b.dY,b.dZ);
+      inc(u-cr,v-cr);inc(u+cr,v+cr);
+      if(b.pi>=0){p=bodies[b.pi];c=comp(b.x-p.x,b.y-p.y,b.z-p.z);cr=Math.sqrt(c[0]*c[0]+c[1]*c[1]+c[2]*c[2])*1.1;
+        u=p.dX;v=PV(p.dY,p.dZ);inc(u-cr,v-cr*sq);inc(u+cr,v+cr*sq);}
+    }
+    hx=Math.max((maxX-minX)/2,0.06);hy=Math.max((maxY-minY)/2,0.06);
+    top=topH;bot=H-dockH;
+    s=Math.min((W-32)/(2*hx),Math.max(80,bot-top-24)/(2*hy));
+    if(followId<0){cam.x+=((minX+maxX)/2-cam.x)*k;cam.y+=((minY+maxY)/2-cam.y)*k;}
+    cam.s*=Math.pow(s/cam.s,k);
+  }
+}
+function clampS(s){return Math.max(0.5,Math.min(5e6,s));}
+
+/* ---------- drawing ---------- */
+var RINGS=[0.001,0.003,0.01,0.03,0.1,0.3,1,3,10,30,100];
+function makeStars(){
+  stars=document.createElement('canvas');stars.width=Math.ceil(W*DPR);stars.height=Math.ceil(H*DPR);
+  var s=stars.getContext('2d'),w=stars.width,h=stars.height,i,g,x,y,r;
+  s.fillStyle='#060B1E';s.fillRect(0,0,w,h);
+  g=s.createRadialGradient(w*0.85,h*0.18,0,w*0.85,h*0.18,w*0.95);g.addColorStop(0,'rgba(92,52,170,0.20)');g.addColorStop(1,'rgba(92,52,170,0)');s.fillStyle=g;s.fillRect(0,0,w,h);
+  g=s.createRadialGradient(w*0.1,h*0.8,0,w*0.1,h*0.8,w*0.9);g.addColorStop(0,'rgba(30,90,170,0.16)');g.addColorStop(1,'rgba(30,90,170,0)');s.fillStyle=g;s.fillRect(0,0,w,h);
+  for(i=0;i<Math.round(W*H/1400);i++){
+    x=Math.random()*w;y=Math.random()*h;r=(Math.random()<0.92?0.5:1.0)*DPR;
+    s.fillStyle=(Math.random()<0.2)?'rgba(170,200,255,'+(0.3+Math.random()*0.5)+')':'rgba(255,255,255,'+(0.15+Math.random()*0.55)+')';
+    s.beginPath();s.arc(x,y,r,0,TAU);s.fill();
+  }
+}
+function drawGrid(){
+  var i,k,R,r,sr,an,lim=4*Math.max(W,H),X,Y;
+  ctx.lineWidth=1;ctx.font='500 10px "Avenir Next",Avenir,sans-serif';
+  for(i=0;i<RINGS.length;i++){R=RINGS[i];r=Math.pow(R,P);sr=r*cam.s;if(sr<22||sr>lim){continue;}
+    ctx.strokeStyle='rgba(120,145,215,0.14)';ctx.beginPath();
+    for(k=0;k<=96;k++){an=k/96*TAU;X=r*Math.cos(an);Y=r*Math.sin(an);if(k===0){ctx.moveTo(SX(X),SY(Y,0));}else{ctx.lineTo(SX(X),SY(Y,0));}}
+    ctx.stroke();
+    if(opt.labels){ctx.fillStyle='rgba(138,151,194,0.6)';ctx.fillText(R<0.02?fmtDist(R):R+' AU',SX(0)+4,SY(-r,0)+12);}
+  }
+}
+function drawStems(){
+  if(tilt<2){return;}
+  var i,b,pz,x,y1,y2;
+  for(i=0;i<bodies.length;i++){b=bodies[i];pz=(b.pi>=0)?bodies[b.pi].dZ:0;
+    if(Math.abs(b.dZ-pz)*cam.s*sinT<3){continue;}
+    x=SX(b.dX);y1=SY(b.dY,b.dZ);y2=SY(b.dY,pz);
+    ctx.strokeStyle=hexA(b.c,0.5);ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,y1);ctx.lineTo(x,y2);ctx.stroke();
+    ctx.fillStyle=hexA(b.c,0.7);ctx.beginPath();ctx.arc(x,y2,2,0,TAU);ctx.fill();
+  }
+}
+function drawOutlines(){
+  var n=bodies.length,i,k,b,p,rx,ry,rz,vx,vy,vz,r,v2,mu,E,rv,ex,ey,ez,e,a,hx,hy,hz,hm,Px,Py,Pz,Qx,Qy,Qz,sl,f,rr,c,cf,sf,sel,x,y,q;
+  ctx.lineWidth=1;
+  for(i=0;i<n;i++){b=bodies[i];if(b.pi<0){continue;}p=bodies[b.pi];
+    rx=b.x-p.x;ry=b.y-p.y;rz=b.z-p.z;vx=b.vx-p.vx;vy=b.vy-p.vy;vz=b.vz-p.vz;
+    r=Math.sqrt(rx*rx+ry*ry+rz*rz);v2=vx*vx+vy*vy+vz*vz;mu=G*(b.m+p.m);E=v2/2-mu/r;if(E>=0){continue;}
+    rv=rx*vx+ry*vy+rz*vz;q=v2-mu/r;
+    ex=(q*rx-rv*vx)/mu;ey=(q*ry-rv*vy)/mu;ez=(q*rz-rv*vz)/mu;e=Math.sqrt(ex*ex+ey*ey+ez*ez);if(e>=0.999){continue;}
+    hx=ry*vz-rz*vy;hy=rz*vx-rx*vz;hz=rx*vy-ry*vx;hm=Math.sqrt(hx*hx+hy*hy+hz*hz);if(hm<=0){continue;}
+    if(e>1e-6){Px=ex/e;Py=ey/e;Pz=ez/e;}else{Px=rx/r;Py=ry/r;Pz=rz/r;}
+    hx/=hm;hy/=hm;hz/=hm;Qx=hy*Pz-hz*Py;Qy=hz*Px-hx*Pz;Qz=hx*Py-hy*Px;
+    a=-mu/(2*E);sl=a*(1-e*e);sel=(b.id===selId);
+    ctx.setLineDash(sel?[]:[2,4]);ctx.strokeStyle=hexA(b.c,sel?0.6:0.3);ctx.beginPath();
+    for(k=0;k<=120;k++){f=k/120*TAU;rr=sl/(1+e*Math.cos(f));cf=rr*Math.cos(f);sf=rr*Math.sin(f);
+      c=comp(cf*Px+sf*Qx,cf*Py+sf*Qy,cf*Pz+sf*Qz);x=SX(p.dX+c[0]);y=SY(p.dY+c[1],p.dZ+c[2]);
+      if(k===0){ctx.moveTo(x,y);}else{ctx.lineTo(x,y);}}
+    ctx.stroke();
+    if(sel&&e>0.01){
+      ctx.setLineDash([]);ctx.font='500 10px "Avenir Next",Avenir,sans-serif';
+      rr=a*(1-e);c=comp(rr*Px,rr*Py,rr*Pz);x=SX(p.dX+c[0]);y=SY(p.dY+c[1],p.dZ+c[2]);
+      ctx.fillStyle='#FFFFFF';ctx.beginPath();ctx.arc(x,y,3,0,TAU);ctx.fill();if(opt.labels){ctx.fillText('closest',x+6,y+12);}
+      rr=a*(1+e);c=comp(-rr*Px,-rr*Py,-rr*Pz);x=SX(p.dX+c[0]);y=SY(p.dY+c[1],p.dZ+c[2]);
+      ctx.fillStyle='#8A97C2';ctx.beginPath();ctx.arc(x,y,3,0,TAU);ctx.fill();if(opt.labels){ctx.fillText('farthest',x+6,y+12);}
+    }
+  }
+  ctx.setLineDash([]);
+}
+function drawTrail(b,map){
+  var t=b.trail,L=Math.floor(t.length/3),ox=0,oy=0,oz=0,p,s,e,k,seg=24;
+  if(L<2){return;}
+  if(b.tpid>=0){p=map[b.tpid];if(!p){return;}ox=p.dX;oy=p.dY;oz=p.dZ;}
+  ctx.lineWidth=1.5;ctx.strokeStyle=b.c;ctx.lineJoin='round';
+  for(s=0;s<L-1;s+=seg){
+    e=s+seg;if(e>L-1){e=L-1;}
+    ctx.globalAlpha=0.05+0.7*(e/(L-1));
+    ctx.beginPath();ctx.moveTo(SX(ox+t[3*s]),SY(oy+t[3*s+1],oz+t[3*s+2]));
+    for(k=s+1;k<=e;k++){ctx.lineTo(SX(ox+t[3*k]),SY(oy+t[3*k+1],oz+t[3*k+2]));}
+    if(e===L-1&&b.tpid===(b.pi>=0?bodies[b.pi].id:-1)){ctx.lineTo(SX(b.dX),SY(b.dY,b.dZ));}
+    ctx.stroke();
+  }
+  ctx.globalAlpha=1;
+}
+function drawBody(b){
+  var x=SX(b.dX),y=SY(b.dY,b.dZ),r=Math.max(2.5,b.dr*cam.s),g,star=b.m>0.02;
+  if(x<-r*4||x>W+r*4||y<-r*4||y>H+r*4){return;}
+  g=ctx.createRadialGradient(x,y,r*0.6,x,y,r*(star?3.4:2.2));
+  g.addColorStop(0,hexA(b.c,star?0.55:0.28));g.addColorStop(1,hexA(b.c,0));
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r*(star?3.4:2.2),0,TAU);ctx.fill();
+  ctx.fillStyle=b.c;ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.fill();
+  if(r>4&&!star){
+    g=ctx.createRadialGradient(x-r*0.35,y-r*0.35,r*0.1,x,y,r);
+    g.addColorStop(0,'rgba(255,255,255,0.35)');g.addColorStop(0.5,'rgba(255,255,255,0)');g.addColorStop(1,'rgba(0,0,25,0.4)');
+    ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.fill();
+  }
+  if(b.kind==='saturn'&&r>3){
+    ctx.save();ctx.translate(x,y);ctx.rotate(-0.35);ctx.scale(1,0.32);
+    ctx.strokeStyle=hexA('#F3D27A',0.8);ctx.lineWidth=Math.max(1,r*0.35);
+    ctx.beginPath();ctx.arc(0,0,r*1.9,0,TAU);ctx.stroke();ctx.restore();
+  }
+}
+function drawCM(){
+  var x=SX(0),y=SY(0,0);
+  ctx.strokeStyle='#FF7AD9';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(x,y,4.5,0,TAU);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(x-9,y);ctx.lineTo(x-5,y);ctx.moveTo(x+5,y);ctx.lineTo(x+9,y);
+  ctx.moveTo(x,y-9);ctx.lineTo(x,y-5);ctx.moveTo(x,y+5);ctx.lineTo(x,y+9);ctx.stroke();
+  if(opt.labels){ctx.fillStyle='rgba(255,122,217,0.85)';ctx.font='500 10px "Avenir Next",Avenir,sans-serif';ctx.fillText('center of mass',x+11,y+13);}
+}
+function drawGhost(){
+  var g=placing.ghost,p=bodies[placing.ref],k,L,x,y;
+  if(!g||!p){return;}
+  L=Math.floor(g.pts.length/3);
+  ctx.setLineDash([3,5]);ctx.strokeStyle='rgba(230,236,255,0.75)';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(SX(p.dX+g.pts[0]),SY(p.dY+g.pts[1],p.dZ+g.pts[2]));
+  for(k=1;k<L;k++){ctx.lineTo(SX(p.dX+g.pts[3*k]),SY(p.dY+g.pts[3*k+1],p.dZ+g.pts[3*k+2]));}
+  ctx.stroke();ctx.setLineDash([]);
+  if(g.hit){x=SX(p.dX+g.pts[3*L-3]);y=SY(p.dY+g.pts[3*L-2],p.dZ+g.pts[3*L-1]);
+    ctx.strokeStyle='#FF9A9A';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x-6,y-6);ctx.lineTo(x+6,y+6);ctx.moveTo(x+6,y-6);ctx.lineTo(x-6,y+6);ctx.stroke();}
+}
+function drawPlace(){
+  var pl=placing,x=pl.ax,y=pl.ay,L=Math.sqrt(pl.dx*pl.dx+pl.dy*pl.dy),cat=CK[pl.key],r=Math.max(3,pl.dr*cam.s),ex,ey,an,ref=bodies[pl.ref],sp,v;
+  if(ref){
+    ctx.setLineDash([2,4]);ctx.strokeStyle='rgba(95,227,255,0.6)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.arc(SX(ref.dX),SY(ref.dY,ref.dZ),Math.max(2.5,ref.dr*cam.s)+7,0,TAU);ctx.stroke();
+    ctx.setLineDash([4,6]);ctx.strokeStyle='rgba(95,227,255,0.4)';
+    ctx.beginPath();ctx.arc(x,y,100,0,TAU);ctx.stroke();ctx.setLineDash([]);
+    ctx.textAlign='center';ctx.font='500 11px "Avenir Next",Avenir,sans-serif';ctx.fillStyle='rgba(95,227,255,0.8)';
+    ctx.fillText('ring = circular orbit speed ('+fmtSpeed(pl.vc*KMS)+' km/s)',x,y-108);
+  }
+  ctx.fillStyle=cat.c;ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.fill();
+  if(L>=12&&ref){
+    ex=x+pl.dx;ey=y+pl.dy;an=Math.atan2(pl.dy,pl.dx);
+    ctx.strokeStyle='#5FE3FF';ctx.lineWidth=2.5;
+    ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(ex,ey);
+    ctx.moveTo(ex,ey);ctx.lineTo(ex-12*Math.cos(an-0.45),ey-12*Math.sin(an-0.45));
+    ctx.moveTo(ex,ey);ctx.lineTo(ex-12*Math.cos(an+0.45),ey-12*Math.sin(an+0.45));ctx.stroke();
+    v=pl.v;sp=Math.sqrt((v[0]-ref.vx)*(v[0]-ref.vx)+(v[1]-ref.vy)*(v[1]-ref.vy)+(v[2]-ref.vz)*(v[2]-ref.vz))*KMS;
+    ctx.font='600 15px "Avenir Next",Avenir,sans-serif';ctx.fillStyle='#E6ECFF';
+    ctx.fillText(fmtSpeed(sp)+' km/s',ex,ey+(pl.dy>0?26:-16));
+  }else if(ref){
+    ctx.font='500 12px "Avenir Next",Avenir,sans-serif';ctx.fillStyle='#E6ECFF';
+    ctx.fillText('release now for a circular orbit',x,y+r+20);
+  }
+  ctx.textAlign='left';
+}
+function draw(dtR){
+  ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(stars,0,0);
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  var n=bodies.length,i,b,map={},ord,sel,ref,f,x,y,r;
+  for(i=0;i<n;i++){map[bodies[i].id]=bodies[i];}
+  if(opt.grid){drawGrid();}
+  if(opt.outlines){drawOutlines();}
+  if(opt.trails){for(i=0;i<n;i++){drawTrail(bodies[i],map);}}
+  if(opt.grid){drawStems();}
+  if(placing&&placing.ghost){drawGhost();}
+  sel=map[selId];ref=map[selRefId];
+  if(sel&&ref){
+    ctx.setLineDash([2,5]);ctx.strokeStyle='rgba(230,236,255,0.35)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(SX(sel.dX),SY(sel.dY,sel.dZ));ctx.lineTo(SX(ref.dX),SY(ref.dY,ref.dZ));ctx.stroke();ctx.setLineDash([]);
+  }
+  ord=bodies.slice().sort(function(a,c){var da=DEP(a.dY,a.dZ),dc=DEP(c.dY,c.dZ);if(Math.abs(da-dc)>1e-12){return da-dc;}return c.dr-a.dr;});
+  for(i=0;i<ord.length;i++){drawBody(ord[i]);}
+  if(opt.cm&&n>=2){drawCM();}
+  if(sel){r=Math.max(2.5,sel.dr*cam.s);ctx.strokeStyle='rgba(255,255,255,0.85)';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(SX(sel.dX),SY(sel.dY,sel.dZ),r+6,0,TAU);ctx.stroke();}
+  if(opt.labels){
+    ctx.font='600 11px "Avenir Next",Avenir,sans-serif';ctx.fillStyle='rgba(200,210,240,0.85)';
+    for(i=0;i<n;i++){b=bodies[i];r=Math.max(2.5,b.dr*cam.s);ctx.fillText(b.name,SX(b.dX)+r+5,SY(b.dY,b.dZ)-r-2);}
+  }
+  for(i=flashes.length-1;i>=0;i--){
+    f=flashes[i];f.t+=dtR;b=map[f.id];
+    if(f.t>0.9||!b){flashes.splice(i,1);continue;}
+    x=SX(b.dX);y=SY(b.dY,b.dZ);r=Math.max(2.5,b.dr*cam.s)+f.t*70;
+    ctx.strokeStyle=hexA(f.c,1-f.t/0.9);ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.stroke();
+  }
+  if(placing&&placing.stage==='drag'){drawPlace();}
+}
+
+/* ---------- UI ---------- */
+var toastT=null;
+function toast(msg){var t=$('toast');t.innerHTML=esc(msg);t.style.opacity='1';if(toastT){clearTimeout(toastT);}toastT=setTimeout(function(){t.style.opacity='0';},3600);}
+function setRate(r){rate=r;$('spd').value=(Math.log(r)/Math.LN10+3)/0.05;updSpeedLabel();}
+function updSpeedLabel(){var l=$('spdL');l.innerHTML='1 s = '+fmtTime(rate)+(lagging&&running?' (max)':'');l.className=(lagging&&running)?'lag':'';}
+function updPlay(){$('bPlay').innerHTML=running?'Pause':'Play';}
+function updTop(){
+  var n=bodies.length,s,d,yy,yi;
+  if(n!==lastN){lastN=n;
+    s=n===0?'Empty space':n===1?'One object':n===2?'Two-body problem':n===3?'Three-body problem':n+'-body problem';
+    $('sub').innerHTML=s;}
+  d=simTime*365.25;
+  if(sceneYear!==null){yy=sceneYear+simTime;yi=Math.floor(yy);$('clock').innerHTML=MONTHS[Math.min(11,Math.floor((yy-yi)*12))]+' '+yi;$('clockL').innerHTML='date';}
+  else{$('clock').innerHTML=d<730?commas(Math.floor(d))+' days':simTime.toFixed(2)+' years';$('clockL').innerHTML='time passed';}
+}
+function buildMassSel(b){
+  var mE=b.m/EM,h='',i,cat,same,found=false;
+  for(i=0;i<CAT.length;i++){cat=CAT[i];same=Math.abs(cat.m-mE)/cat.m<0.002&&!found;if(same){found=true;}
+    h+='<option value="'+cat.k+'"'+(same?' selected':'')+'>'+cat.n+' ('+fmtMass(cat.m)+')</option>';}
+  if(!found){h='<option value="" selected>Custom ('+fmtMass(mE)+')</option>'+h;}
+  $('cMass').innerHTML=h;
+}
+function showCard(){
+  var b=byId(selId),c=$('card');
+  if(!b){c.style.display='none';selRefId=-1;measure();return;}
+  c.style.display='block';
+  $('cDot').style.background=b.c;$('cName').innerHTML=esc(b.name);
+  $('cFacts').style.display=FACTS[b.kind]?'':'none';
+  buildMassSel(b);updFollow();updCard();measure();
+}
+function setCell(i,v,l){$('v'+i).innerHTML=v;$('l'+i).innerHTML=l;}
+function updCard(){
+  var b=byId(selId);if(!b){return;}
+  var f=infoFor(b),st;
+  selRefId=-1;
+  if(f.mode==='alone'){
+    st='Alone in space. Add another object to give it something to orbit.';
+    setCell(1,'0','Speed, km/s');setCell(2,'--','Distance');setCell(3,'--','Orbit time');setCell(4,'--','Eccentricity');
+  }else if(f.mode==='anchor'){
+    st='Wobbling around the center of mass of the whole system.';
+    setCell(1,fmtSpeed(f.speed*KMS),'Speed, km/s');setCell(2,fmtDist(f.dist),'From center');
+    setCell(3,(f.share*100>=99.9?'99.9+':(f.share*100).toFixed(1))+'%','Share of mass');setCell(4,'--','Eccentricity');
+  }else{
+    selRefId=f.ref.id;
+    st=f.bound?(f.mutual?'Orbiting each other with '+theName(f.ref.name):'Orbiting '+theName(f.ref.name)):'Escaping '+theName(f.ref.name)+'. It will not come back';
+    st+='. Measured from '+theName(f.ref.name)+'.';
+    if(f.bound&&f.e>0.02){st+=' Closest '+fmtDist(f.a*(1-f.e))+', farthest '+fmtDist(f.a*(1+f.e))+'.';}
+    if(f.bound&&f.inc>0.5){st+=' Orbit tilted '+f.inc.toFixed(1)+' degrees.';}
+    setCell(1,fmtSpeed(f.speed*KMS),'Speed, km/s');setCell(2,fmtDist(f.dist),'Distance');
+    setCell(3,f.bound?fmtTime(f.T):'none','Orbit time');setCell(4,f.e.toFixed(f.e<0.1?3:2),'Eccentricity');
+  }
+  $('cStatus').innerHTML=esc(st);
+}
+function updFollow(){$('cFollow').innerHTML=(followId>=0&&followId===selId)?'Following':'Follow';}
+function selectAt(x,y){
+  var best=-1,bd=1e9,i,b,px,py,r,d;
+  for(i=0;i<bodies.length;i++){b=bodies[i];px=SX(b.dX);py=SY(b.dY,b.dZ);r=Math.max(2.5,b.dr*cam.s);d=Math.sqrt((px-x)*(px-x)+(py-y)*(py-y));
+    if(d<Math.max(24,r+10)&&d<bd){bd=d;best=b.id;}}
+  selId=best;showCard();
+}
+function buildAddSheet(){
+  var h='',i,c;
+  for(i=0;i<CAT.length;i++){c=CAT[i];
+    h+='<button class="ob'+(c.k===addKey?' sel':'')+'" data-k="'+c.k+'"><span class="o1"><span class="dot" style="background:'+c.c+'"></span>'+c.n+'</span><span class="o2">'+fmtMass(c.m)+' Earth'+(c.m===1?'':'s')+'</span></button>';}
+  $('objGrid').innerHTML=h;
+}
+function buildOrbitSel(){
+  var s=$('orbitSel'),h='<option value="auto">Automatic (its usual partner)</option>',i;
+  for(i=0;i<bodies.length;i++){h+='<option value="'+bodies[i].id+'">'+esc(bodies[i].name)+'</option>';}
+  if(bodies.length===0){h='<option value="auto">Nothing yet. It will sit at the center.</option>';}
+  s.innerHTML=h;s.disabled=bodies.length===0;
+}
+function openSheet(id){closeSheets();$('shade').style.display='block';$(id).style.display='block';}
+function closeSheets(){$('shade').style.display='none';$('addSheet').style.display='none';$('sceneSheet').style.display='none';$('optSheet').style.display='none';}
+function buildScenes(){
+  var h='',i;
+  for(i=0;i<SCENES.length;i++){h+='<button class="scene" data-i="'+i+'"><div class="s1">'+SCENES[i].n+'</div><div class="s2">'+SCENES[i].d+'</div></button>';}
+  $('sceneList').innerHTML=h;
+}
+function setMass(b,mE){
+  mE=Math.max(1e-6,Math.min(3e7,mE));b.m=mE*EM;rebuild();buildMassSel(b);updCard();
+}
+
+/* ---------- facts ---------- */
+var FACTS={
+sun:{tag:"The star at the center of our solar system",g:27.9,
+ stats:[["1,392,700 km","Diameter (109 Earths across)"],["274 m/s&sup2;","Surface gravity (27.9x Earth)"],["25 to 35 days","One spin (faster at the equator)"],["4.6 billion years","Age"],["5,500 &deg;C (9,900 &deg;F)","Surface temperature"],["15 million &deg;C","Core temperature"],["99.8%","Share of all solar system mass"],["8 min 20 s","Time for its light to reach Earth"]],
+ sec:[["Discovery and exploration",["Around 1610, Galileo and other early telescope users tracked sunspots moving across the Sun and used them to show that the Sun rotates.","In 1868, astronomers studying sunlight during an eclipse found a yellow line in the spectrum that no known element made. They named the new element helium, after Helios, the Greek sun god. Helium was not found on Earth until 1895.","NASA's Parker Solar Probe flies through the Sun's outer atmosphere, the corona. In December 2024 it passed about 6.1 million km from the surface at roughly 690,000 km/h, the fastest object humans have ever built."]],
+  ["Weather and storms",["Sunspots are cooler, darker patches caused by tangled magnetic fields. Their number rises and falls on a cycle of about 11 years.","Solar flares are sudden explosions of energy. Coronal mass ejections (CMEs) blast billions of tons of charged gas out into space.","When a CME hits Earth's magnetic field, it causes a geomagnetic storm. In May 2024 a strong one pushed the northern lights as far south as Florida.","The Carrington Event of 1859 was so powerful that telegraph wires sparked and auroras were seen near the equator."]],
+  ["Did you know?",["Every second, the Sun's core fuses about 600 million tons of hydrogen into helium. A tiny bit of mass is turned into energy, following Einstein's E = mc&sup2;.","Energy made in the core can take tens of thousands of years to work its way out to the surface, but then only 8 minutes to reach Earth.","About 1.3 million Earths could fit inside the Sun.","In about 5 billion years, the Sun will swell into a red giant star."]]],
+ tryit:"Tap the Sun and change its mass to Jupiter's. With much weaker gravity holding them, the planets fly off in nearly straight lines. That shows gravity is the only thing keeping planets in orbit."},
+mercury:{tag:"The smallest planet and the closest to the Sun",g:0.38,
+ stats:[["4,879 km","Diameter"],["3.7 m/s&sup2;","Surface gravity (0.38x Earth)"],["176 Earth days","Sunrise to sunrise"],["88 Earth days","One year"],["0","Moons"],["-180 to 430 &deg;C","Night to day temperature"],["0.39 AU","Distance from the Sun (58 million km)"],["47 km/s","Orbit speed, fastest of all planets"]],
+ sec:[["Discovery and exploration",["Mercury has been known since ancient times. It was named after the speedy Roman messenger god because it moves across the sky so quickly.","Mariner 10 flew past Mercury three times in 1974 and 1975, the first spacecraft to visit.","NASA's MESSENGER orbited from 2011 to 2015 and found water ice hiding in craters near the poles that never see sunlight.","BepiColombo, a joint European and Japanese mission, is due to go into orbit around Mercury in late 2026."]],
+  ["Weather and storms",["Mercury has almost no atmosphere, only a very thin layer of atoms called an exosphere. That means no wind, clouds, or rain.","With no air to trap heat, it has the biggest temperature swings of any planet: hot enough to melt lead by day and colder than Antarctica at night.","The solar wind slams into Mercury's weak magnetic field, creating twisted bundles of magnetic field lines that scientists nicknamed magnetic tornadoes."]],
+  ["Did you know?",["Mercury is shrinking. As its iron core cools, the surface has wrinkled into cliffs hundreds of kilometers long.","Its iron core fills about 85% of the planet's radius.","A small wobble in Mercury's orbit puzzled scientists for decades until Einstein's theory of general relativity explained it in 1915.","From Mercury's surface, the Sun would look about 3 times bigger than it does from Earth."]]],
+ tryit:"Load Inner solar system, tap Mercury, and check its speed. It moves around 47 km/s. Closer to the Sun means stronger gravity, so a planet must move faster to stay in orbit."},
+venus:{tag:"The hottest planet, hidden under acid clouds",g:0.91,
+ stats:[["12,104 km","Diameter"],["8.87 m/s&sup2;","Surface gravity (0.91x Earth)"],["243 Earth days","One spin (backward)"],["225 Earth days","One year"],["0","Moons"],["465 &deg;C (870 &deg;F)","Surface temperature"],["0.72 AU","Distance from the Sun (108 million km)"],["92x Earth's","Air pressure at the surface"]],
+ sec:[["Discovery and exploration",["In 1610, Galileo saw Venus go through phases like the Moon. That was strong evidence that planets orbit the Sun, not Earth.","The Soviet Venera 7 probe (1970) was the first spacecraft to land on another planet and send back data.","Venera 13 (1982) sent the first color photos from Venus's surface and survived for 127 minutes before the heat and pressure destroyed it.","NASA's Magellan spacecraft used radar to see through the clouds and mapped 98% of the surface between 1990 and 1994."]],
+  ["Weather and storms",["Venus's thick carbon dioxide air traps heat in a runaway greenhouse effect. It is hotter than Mercury even though it is almost twice as far from the Sun.","Its clouds are made of droplets of sulfuric acid.","The cloud tops race around the whole planet in about 4 Earth days, with winds near 360 km/h, even though the planet itself spins very slowly.","Standing on the surface would feel like being about 900 meters deep in the ocean."]],
+  ["Did you know?",["A day on Venus is longer than its year.","Venus spins backward compared to most planets, so the Sun rises in the west there.","After the Moon, Venus is the brightest natural object in the night sky. People call it the morning star or evening star.","Venus is nearly the same size as Earth, which is why it is called Earth's twin."]]],
+ tryit:"Add Venus in orbit around the Sun and tap it. Compare its orbit time, about 225 days, to Earth's 365. Inner planets have shorter paths and move faster."},
+earth:{tag:"The only world known to have life",g:1,
+ stats:[["12,742 km","Diameter"],["9.8 m/s&sup2;","Surface gravity"],["24 hours","One day"],["365.25 days","One year"],["1","Moon"],["15 &deg;C (59 &deg;F)","Average temperature"],["1 AU","Distance from the Sun (150 million km)"],["29.8 km/s","Orbit speed"]],
+ sec:[["Discovery and exploration",["Around 240 BC, the Greek scholar Eratosthenes measured Earth's size by comparing shadows in two Egyptian cities. His answer was remarkably close.","In 1543, Nicolaus Copernicus published his argument that Earth orbits the Sun rather than sitting still at the center.","Apollo 8's Earthrise photo (1968) and Voyager 1's Pale Blue Dot image (1990, taken from about 6 billion km away) changed how people see our planet.","Today, thousands of satellites track weather, sea level, ice, and forests from orbit."]],
+  ["Weather and storms",["Hurricanes form over ocean water warmer than about 27 &deg;C (80 &deg;F). Warm water evaporating gives the storm its energy.","Earth's rotation, through the Coriolis effect, makes Northern Hemisphere hurricanes spin counterclockwise.","Hurricane Patricia (2015) had the strongest winds ever measured in a hurricane, about 345 km/h (215 mph).","Florida has more lightning than any other US state, which is why it is called the lightning capital of the country."]],
+  ["Did you know?",["About 71% of Earth's surface is covered by water.","Earth is the densest planet in the solar system.","Liquid iron moving in Earth's outer core creates a magnetic field that shields us from the solar wind and causes auroras.","Tides from the Moon are slowly braking Earth's spin. Days get about 2 milliseconds longer every century."]]],
+ tryit:"In the Sun and Earth scene, tap Earth. Its speed reads close to 29.8 km/s, which is about 107,000 km/h. You are moving that fast right now."},
+moon:{tag:"Earth's only natural satellite",g:0.165,
+ stats:[["3,475 km","Diameter"],["1.62 m/s&sup2;","Surface gravity (about 1/6 of Earth's)"],["29.5 Earth days","Sunrise to sunrise"],["27.3 days","One orbit around Earth"],["384,400 km","Distance from Earth"],["-173 to 127 &deg;C","Night to day temperature"],["4.5 billion years","Age"],["3.8 cm per year","How fast it drifts away from Earth"]],
+ sec:[["Discovery and exploration",["Galileo's telescope in 1609 showed mountains and craters, proving the Moon was not a perfect, smooth sphere.","The Soviet Luna 2 (1959) was the first spacecraft to reach the Moon, and Luna 3 took the first photos of its far side the same year.","Apollo 11 landed on July 20, 1969. Twelve astronauts walked on the Moon between 1969 and 1972 and brought back 382 kg of rock and soil.","China's Chang'e 4 made the first landing on the far side in 2019, and Chang'e 6 brought back the first far-side samples in 2024.","NASA's Artemis program aims to land astronauts near the south pole, where water ice is hidden in dark craters."]],
+  ["Weather and storms",["The Moon has almost no atmosphere, so it has no weather. Footprints left by Apollo astronauts can last for millions of years.","Without air to scatter light, the sky is black even in the middle of the day.","Instruments left by Apollo astronauts recorded moonquakes. Some shallow ones lasted around 10 minutes.","Tiny meteorites constantly hit the surface, grinding rock into a fine, sharp dust called regolith."]],
+  ["Did you know?",["The Moon probably formed when a Mars-sized object crashed into the young Earth about 4.5 billion years ago.","It is tidally locked: it spins once per orbit, so the same side always faces Earth.","The Moon's gravity pulls on Earth's oceans and causes the tides.","You would weigh about 1/6 as much on the Moon and could jump about 6 times higher."]]],
+ tryit:"Load Earth and Moon and watch the pink center of mass marker. It sits inside Earth, about 4,700 km from Earth's center, so Earth wobbles in a small circle too."},
+mars:{tag:"The red planet, home of the tallest volcano",g:0.38,
+ stats:[["6,779 km","Diameter"],["3.71 m/s&sup2;","Surface gravity (0.38x Earth)"],["24 h 37 min","One day (called a sol)"],["687 Earth days","One year"],["2","Moons (Phobos and Deimos)"],["-65 &deg;C (-85 &deg;F)","Average temperature"],["1.52 AU","Distance from the Sun (228 million km)"],["Under 1%","Air pressure compared to Earth"]],
+ sec:[["Discovery and exploration",["Asaph Hall discovered Mars's two small moons in 1877. Their names, Phobos and Deimos, mean fear and dread.","Mariner 4 (1965) sent back the first close-up photos, showing a surface covered in craters.","Viking 1 made the first successful US landing in 1976. Sojourner became the first Mars rover in 1997.","NASA's Perseverance rover landed in 2021 to collect rock samples. Its helicopter, Ingenuity, made the first powered flight on another planet and flew 72 times."]],
+  ["Weather and storms",["Dust storms can grow to cover the entire planet. A global storm in 2018 blocked sunlight from the rover Opportunity's solar panels and ended its mission.","Dust devils several kilometers tall sweep across the plains.","The polar ice caps contain water ice and frozen carbon dioxide (dry ice). They grow and shrink with the seasons, and carbon dioxide snow falls in winter.","Sunsets on Mars look blue because of the way fine dust scatters light."]],
+  ["Did you know?",["Olympus Mons is about 22 km tall, roughly 2.5 times the height of Mount Everest.","The canyon Valles Marineris is about 4,000 km long, long enough to stretch across the United States.","Mars is red because its dust is rich in iron oxide, which is rust.","Phobos is slowly spiraling inward and may break apart into a ring in about 50 million years."]]],
+ tryit:"Add Mars in orbit and compare its orbit time, about 687 days, to Earth's. Farther planets travel a longer path and move slower, just as Kepler's laws predict."},
+jupiter:{tag:"The giant of the solar system",g:2.53,
+ stats:[["139,820 km","Diameter (11 Earths across)"],["24.8 m/s&sup2;","Gravity at the cloud tops (2.5x Earth)"],["9 h 56 min","One day, the fastest spin of any planet"],["11.9 Earth years","One year"],["95+","Known moons"],["-110 &deg;C (-166 &deg;F)","Cloud top temperature"],["5.2 AU","Distance from the Sun (778 million km)"],["2.5x","Its mass compared to all other planets combined"]],
+ sec:[["Discovery and exploration",["In 1610, Galileo discovered Jupiter's four largest moons: Io, Europa, Ganymede, and Callisto. It was proof that not everything in the sky orbits Earth.","In 1994, the comet Shoemaker-Levy 9 broke into pieces and slammed into Jupiter, leaving dark scars bigger than Earth.","NASA's Juno spacecraft has orbited Jupiter since 2016, studying its interior and its poles.","Europa Clipper launched in 2024 and will reach Jupiter in 2030 to study the ocean hidden under Europa's ice."]],
+  ["Weather and storms",["The Great Red Spot is a storm wider than Earth. People have watched it for at least 190 years, and it has been slowly shrinking.","Winds in the Great Red Spot reach about 430 km/h (270 mph).","Juno found clusters of giant cyclones arranged in geometric patterns around both poles.","Jupiter's colored stripes are bands of rising and sinking gas, and its lightning can be stronger than Earth's."]],
+  ["Did you know?",["Ganymede is the largest moon in the solar system. It is even bigger than Mercury.","Io is the most volcanic place in the solar system, with hundreds of active volcanoes.","Europa likely has a salty ocean holding more water than all of Earth's oceans.","Jupiter has faint, dusty rings, discovered by Voyager 1 in 1979."]]],
+ tryit:"Load Sun, Earth and Jupiter. Tap Jupiter and press x10 a few times. Watch a heavier giant tug Earth's orbit out of shape. This is the three-body problem in action."},
+saturn:{tag:"The ringed planet that could float in water",g:1.07,
+ stats:[["116,460 km","Diameter"],["10.4 m/s&sup2;","Gravity at the cloud tops (1.07x Earth)"],["10 h 33 min","One day"],["29.4 Earth years","One year"],["274","Known moons, the most of any planet"],["-140 &deg;C (-220 &deg;F)","Cloud top temperature"],["9.5 AU","Distance from the Sun (1.4 billion km)"],["0.69 g/cm&sup3;","Density, less than water"]],
+ sec:[["Discovery and exploration",["In 1610, Galileo saw strange bumps on each side of Saturn. His telescope was too weak to show they were rings.","In 1655, Christiaan Huygens figured out the bumps were rings and discovered Saturn's largest moon, Titan.","NASA's Cassini spacecraft orbited Saturn from 2004 to 2017, then dove into the planet on purpose so it could never crash into a moon that might hold life.","The Huygens probe landed on Titan in 2005. It is still the farthest landing humans have ever made.","In 2025, astronomers announced 128 newly found moons, bringing Saturn's total to 274."]],
+  ["Weather and storms",["A six-sided jet stream circles Saturn's north pole. Each side of the hexagon is about 14,500 km long, wider than Earth.","Winds near the equator reach about 1,800 km/h (1,100 mph).","About every 30 years, a giant white storm erupts. One in 2010 and 2011 stretched all the way around the planet.","Huge lightning storms on Saturn can last for months."]],
+  ["Did you know?",["The rings are mostly chunks of water ice, from dust grains to pieces as big as a house. They stretch about 280,000 km across but are often only about 10 meters thick.","Titan has a thick atmosphere and lakes of liquid methane. NASA's Dragonfly mission plans to send a flying drone there.","The moon Enceladus shoots geysers of water into space from an ocean under its ice.","Saturn is the least dense planet. If you found a big enough bathtub, it would float."]]],
+ tryit:"Saturn has 95 times Earth's mass but is so big that gravity at its cloud tops is close to Earth's. Tap Saturn and give it the Sun's mass to see what a second star would do to the solar system."},
+uranus:{tag:"The ice giant that rolls on its side",g:0.9,
+ stats:[["50,724 km","Diameter"],["8.87 m/s&sup2;","Gravity at the cloud tops (0.9x Earth)"],["17 h 14 min","One day"],["84 Earth years","One year"],["29","Known moons"],["-224 &deg;C (-371 &deg;F)","Coldest recorded temperature"],["19.2 AU","Distance from the Sun (2.9 billion km)"],["98&deg;","Tilt of its axis"]],
+ sec:[["Discovery and exploration",["William Herschel discovered Uranus in 1781 with a homemade telescope. It was the first planet found with a telescope and nearly doubled the known size of the solar system.","Herschel wanted to name it George's Star after King George III of England.","Uranus's rings were discovered in 1977 when they blocked the light of a star passing behind them.","Voyager 2 is the only spacecraft to visit, flying past in 1986."]],
+  ["Weather and storms",["Because Uranus is tipped on its side, each pole gets about 42 years of nonstop sunlight followed by 42 years of darkness.","Uranus has the coldest atmosphere of any planet.","Methane gas in the air absorbs red light, giving the planet its blue-green color.","Bright storms appear as the seasons change, and telescopes like Hubble and Webb keep watch on them."]],
+  ["Did you know?",["Uranus is an ice giant, made mostly of water, methane, and ammonia around a small rocky core.","Its moons are named after characters from William Shakespeare and Alexander Pope.","Scientists think a giant collision long ago knocked Uranus onto its side.","Deep inside ice giants, extreme pressure may squeeze carbon into diamonds that sink like rain. Scientists are still testing this idea."]]],
+ tryit:"Load the Whole solar system, tap Uranus, and press Follow. Its orbit time reads about 84 years. A student born today would be about 84 before Uranus finishes one lap."},
+neptune:{tag:"The windy blue planet found with math",g:1.14,
+ stats:[["49,244 km","Diameter"],["11.15 m/s&sup2;","Gravity at the cloud tops (1.14x Earth)"],["16 h 6 min","One day"],["165 Earth years","One year"],["16","Known moons"],["About -200 &deg;C","Cloud top temperature"],["30 AU","Distance from the Sun (4.5 billion km)"],["2,000+ km/h","Top wind speed, the fastest in the solar system"]],
+ sec:[["Discovery and exploration",["Neptune was found with math and gravity. Uranus was not moving exactly as predicted, so Urbain Le Verrier calculated where an unseen planet must be pulling on it. In 1846, Johann Galle pointed a telescope there and found Neptune within about 1 degree of the prediction.","William Lassell discovered Neptune's largest moon, Triton, just 17 days later.","Voyager 2 flew past in 1989. It is still the only spacecraft to visit.","In 2011, Neptune finished its first full orbit since it was discovered."]],
+  ["Weather and storms",["Neptune has the fastest winds in the solar system, over 2,000 km/h.","In 1989, Voyager 2 photographed the Great Dark Spot, a storm about the size of Earth. When Hubble looked in 1994, it was gone.","Bright white clouds of frozen methane drift high above the blue atmosphere.","Neptune gives off more than twice as much heat as it gets from the Sun, which helps power its storms."]],
+  ["Did you know?",["Triton orbits backward, which suggests it was captured by Neptune's gravity. It has geysers that shoot nitrogen gas.","Triton is slowly spiraling inward and may one day be torn apart into rings.","Sunlight takes about 4 hours to reach Neptune.","From Neptune, the Sun looks like an extremely bright star."]]],
+ tryit:"Recreate Le Verrier's discovery: load the Whole solar system, tap Uranus, and watch its data. Then remove Neptune. Over time, the small tug Neptune gave Uranus disappears."},
+pluto:{tag:"The famous dwarf planet",g:0.063,
+ stats:[["2,377 km","Diameter, smaller than our Moon"],["0.62 m/s&sup2;","Surface gravity (0.06x Earth)"],["6.4 Earth days","One spin (backward)"],["248 Earth years","One year"],["5","Moons"],["About -230 &deg;C","Surface temperature"],["39.5 AU","Average distance from the Sun (5.9 billion km)"],["Dwarf planet","Official status since 2006"]],
+ sec:[["Discovery and exploration",["Clyde Tombaugh, a 24-year-old working at Lowell Observatory in Arizona, discovered Pluto in 1930 by comparing photos of the night sky taken days apart.","An 11-year-old English girl, Venetia Burney, suggested the name Pluto, after the Roman god of the underworld.","In 2006, the International Astronomical Union reclassified Pluto as a dwarf planet because it has not cleared other objects out of its orbit.","NASA's New Horizons flew past Pluto on July 14, 2015, after a journey of more than nine years. It carries some of Clyde Tombaugh's ashes."]],
+  ["Weather and storms",["Pluto has a thin nitrogen atmosphere with layers of blue haze.","As Pluto moves farther from the Sun, its atmosphere may freeze and fall to the ground as frost.","Its famous heart-shaped region includes a giant glacier of nitrogen ice that slowly churns like a lava lamp.","Pluto has mountains of water ice about as tall as the Rocky Mountains."]],
+  ["Did you know?",["Its biggest moon, Charon, is half Pluto's size. They orbit a center of mass that sits in empty space between them.","Pluto and Charon always show the same face to each other.","Pluto's orbit is so stretched that from 1979 to 1999 it was closer to the Sun than Neptune was.","Pluto is narrower than the United States is wide."]]],
+ tryit:"Open Scenes and load Pluto crosses Neptune. It starts in 1930, the year Pluto was discovered. Tap Pluto to see its closest and farthest points. Watch the date: from 1979 to 1999 Pluto dips inside Neptune's orbit outline. Now tilt the view with two fingers until it is edge-on: Pluto's 17 degree tilt carries it far above Neptune's path, one reason the two never come close."}
+};
+var fIdx=0;
+function drawFactPlanet(cat){
+  var c=$('fPlanet'),d=Math.min(window.devicePixelRatio||1,3),S=230,x=S/2,y=S/2,r,g,k,cx;
+  c.width=S*d;c.height=S*d;c.style.width=S+'px';c.style.height=S+'px';
+  cx=c.getContext('2d');cx.setTransform(d,0,0,d,0,0);cx.clearRect(0,0,S,S);
+  r=cat.k==='saturn'?54:cat.k==='sun'?70:62;
+  g=cx.createRadialGradient(x,y,r*0.7,x,y,r*(cat.k==='sun'?1.65:1.5));
+  g.addColorStop(0,hexA(cat.c,cat.k==='sun'?0.6:0.3));g.addColorStop(1,hexA(cat.c,0));
+  cx.fillStyle=g;cx.beginPath();cx.arc(x,y,r*1.65,0,TAU);cx.fill();
+  function ring(a0,a1){cx.save();cx.translate(x,y);cx.rotate(-0.3);cx.scale(1,0.28);
+    cx.strokeStyle='rgba(243,210,122,0.85)';cx.lineWidth=13;cx.beginPath();cx.arc(0,0,r*1.75,a0,a1);cx.stroke();
+    cx.strokeStyle='rgba(200,170,110,0.6)';cx.lineWidth=6;cx.beginPath();cx.arc(0,0,r*2.05,a0,a1);cx.stroke();cx.restore();}
+  if(cat.k==='saturn'){ring(Math.PI,TAU);}
+  cx.save();cx.beginPath();cx.arc(x,y,r,0,TAU);cx.clip();
+  cx.fillStyle=cat.c;cx.fillRect(x-r,y-r,2*r,2*r);
+  if(cat.k==='jupiter'||cat.k==='saturn'){
+    for(k=-5;k<=5;k++){cx.fillStyle=(k%2===0)?'rgba(150,90,50,0.28)':'rgba(255,240,220,0.18)';cx.fillRect(x-r,y+k*r*0.19-r*0.07,2*r,r*0.12);}
+    if(cat.k==='jupiter'){cx.save();cx.translate(x+r*0.3,y+r*0.33);cx.scale(1,0.55);cx.fillStyle='rgba(190,70,40,0.75)';cx.beginPath();cx.arc(0,0,r*0.2,0,TAU);cx.fill();cx.restore();}
+  }
+  if(cat.k==='earth'){cx.fillStyle='rgba(80,170,90,0.75)';cx.beginPath();cx.arc(x-r*0.3,y-r*0.15,r*0.32,0,TAU);cx.fill();cx.beginPath();cx.arc(x+r*0.35,y+r*0.3,r*0.22,0,TAU);cx.fill();
+    cx.fillStyle='rgba(255,255,255,0.55)';cx.fillRect(x-r,y-r*0.6,2*r,r*0.06);cx.fillRect(x-r,y+r*0.05,2*r,r*0.05);}
+  if(cat.k==='mars'){cx.fillStyle='rgba(255,255,255,0.8)';cx.beginPath();cx.arc(x,y-r*1.02,r*0.35,0,TAU);cx.fill();}
+  if(cat.k==='moon'||cat.k==='mercury'){cx.fillStyle='rgba(60,60,75,0.3)';
+    cx.beginPath();cx.arc(x-r*0.3,y-r*0.2,r*0.18,0,TAU);cx.fill();cx.beginPath();cx.arc(x+r*0.25,y+r*0.25,r*0.12,0,TAU);cx.fill();cx.beginPath();cx.arc(x+r*0.1,y-r*0.45,r*0.08,0,TAU);cx.fill();}
+  if(cat.k==='neptune'){cx.save();cx.translate(x-r*0.25,y+r*0.2);cx.scale(1,0.55);cx.fillStyle='rgba(20,30,90,0.6)';cx.beginPath();cx.arc(0,0,r*0.18,0,TAU);cx.fill();cx.restore();}
+  if(cat.k==='pluto'){cx.fillStyle='rgba(255,245,235,0.75)';cx.beginPath();cx.arc(x-r*0.12,y+r*0.18,r*0.24,0,TAU);cx.fill();cx.beginPath();cx.arc(x+r*0.22,y+r*0.18,r*0.24,0,TAU);cx.fill();
+    cx.beginPath();cx.moveTo(x-r*0.35,y+r*0.25);cx.lineTo(x+r*0.05,y+r*0.7);cx.lineTo(x+r*0.45,y+r*0.25);cx.fill();}
+  if(cat.k!=='sun'){g=cx.createRadialGradient(x-r*0.4,y-r*0.4,r*0.1,x,y,r*1.05);
+    g.addColorStop(0,'rgba(255,255,255,0.3)');g.addColorStop(0.45,'rgba(255,255,255,0)');g.addColorStop(1,'rgba(0,0,25,0.6)');cx.fillStyle=g;cx.fillRect(x-r,y-r,2*r,2*r);}
+  else{g=cx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,'rgba(255,255,230,0.6)');g.addColorStop(1,'rgba(255,120,30,0.35)');cx.fillStyle=g;cx.fillRect(x-r,y-r,2*r,2*r);}
+  cx.restore();
+  if(cat.k==='saturn'){ring(0,Math.PI);}
+}
+function updWeigh(){
+  var f=FACTS[CAT[fIdx].k],w=parseFloat($('fWin').value),n=CAT[fIdx].n;
+  if(!(w>0)){$('fWout').innerHTML='Type your weight to compare.';return;}
+  var v=w*f.g,txt=v>=100?commas(v):v.toFixed(1);
+  if(CAT[fIdx].k==='earth'){$('fWout').innerHTML='On Earth you weigh <b>'+txt+' lb</b>. Your mass is the same everywhere; your weight depends on gravity.';return;}
+  var place=(CAT[fIdx].k==='sun'||CAT[fIdx].k==='jupiter'||CAT[fIdx].k==='saturn'||CAT[fIdx].k==='uranus'||CAT[fIdx].k==='neptune')?'at the cloud tops of '+theName(n):'on '+theName(n);
+  if(CAT[fIdx].k==='sun'){place='at the surface of the Sun';}
+  $('fWout').innerHTML='You would weigh <b>'+txt+' lb</b> '+place+'.';
+}
+function renderFacts(){
+  var cat=CAT[fIdx],f=FACTS[cat.k],h='',i,j,sec;
+  drawFactPlanet(cat);
+  $('fName').innerHTML=cat.n;$('fName').style.color=cat.k==='moon'?'#E6ECFF':cat.c;
+  $('fTag').innerHTML=f.tag;
+  for(i=0;i<f.stats.length;i++){h+='<div class="fs"><div class="v">'+f.stats[i][0]+'</div><div class="l">'+f.stats[i][1]+'</div></div>';}
+  $('fStats').innerHTML=h;h='';
+  for(i=0;i<f.sec.length;i++){sec=f.sec[i];h+='<div class="fsec"><h3>'+sec[0]+'</h3><ul>';
+    for(j=0;j<sec[1].length;j++){h+='<li>'+sec[1][j]+'</li>';}h+='</ul></div>';}
+  $('fSecs').innerHTML=h;
+  $('fTryP').innerHTML=f.tryit;
+  $('fCount').innerHTML=(fIdx+1)+' of '+CAT.length;
+  $('fPrev').innerHTML=CAT[(fIdx+CAT.length-1)%CAT.length].n;
+  $('fNext').innerHTML=CAT[(fIdx+1)%CAT.length].n;
+  updWeigh();
+  $('fScroll').scrollTop=0;
+}
+function openFacts(kind){
+  var i;fIdx=0;for(i=0;i<CAT.length;i++){if(CAT[i].k===kind){fIdx=i;}}
+  closeSheets();$('facts').style.display='block';renderFacts();
+}
+$('fClose').addEventListener('click',function(){$('facts').style.display='none';});
+$('fPrev').addEventListener('click',function(){fIdx=(fIdx+CAT.length-1)%CAT.length;renderFacts();});
+$('fNext').addEventListener('click',function(){fIdx=(fIdx+1)%CAT.length;renderFacts();});
+$('fWin').addEventListener('input',updWeigh);
+$('cFacts').addEventListener('click',function(){var b=byId(selId);if(b){openFacts(b.kind);}});
+$('optFacts').addEventListener('click',function(){var b=byId(selId);openFacts(b?b.kind:'sun');});
+
+/* ---------- events ---------- */
+$('bPlay').addEventListener('click',function(){running=!running;updPlay();});
+$('spd').addEventListener('input',function(){rate=Math.pow(10,-3+parseFloat(this.value)*0.05);updSpeedLabel();});
+$('tilt').addEventListener('input',function(){setTilt(parseFloat(this.value));});
+$('bAdd').addEventListener('click',function(){buildAddSheet();buildOrbitSel();openSheet('addSheet');});
+$('bScene').addEventListener('click',function(){openSheet('sceneSheet');});
+$('bMore').addEventListener('click',function(){openSheet('optSheet');});
+$('bFit').addEventListener('click',function(){cam.auto=true;followId=-1;updFollow();});
+$('shade').addEventListener('click',closeSheets);
+$('addX').addEventListener('click',closeSheets);
+$('sceneX').addEventListener('click',closeSheets);
+$('optX').addEventListener('click',closeSheets);
+$('objGrid').addEventListener('click',function(e){
+  var t=e.target;while(t&&t!==this&&!t.getAttribute('data-k')){t=t.parentNode;}
+  if(!t||t===this){return;}addKey=t.getAttribute('data-k');buildAddSheet();
+});
+$('addOrbit').addEventListener('click',function(){addInOrbit(addKey,$('orbitSel').value);});
+$('addPlace').addEventListener('click',startPlacing);
+$('bannerX').addEventListener('click',endPlacing);
+$('sceneList').addEventListener('click',function(e){
+  var t=e.target;while(t&&t!==this&&t.getAttribute('data-i')===null){t=t.parentNode;}
+  if(!t||t===this){return;}closeSheets();var i=parseInt(t.getAttribute('data-i'),10);loadScene(i);toast(SCENES[i].n+': '+SCENES[i].d+'.');
+});
+(function(){
+  var tg=document.querySelectorAll('.tog'),i;
+  for(i=0;i<tg.length;i++){tg[i].addEventListener('click',function(){
+    var k=this.getAttribute('data-k');opt[k]=!opt[k];
+    this.className='tog'+(opt[k]?' on':'');this.querySelector('.st').innerHTML=opt[k]?'On':'Off';
+    if(k==='trails'&&!opt.trails){clearTrails();}
+    if(k==='merge'){rebuild();}
+  });}
+})();
+$('clearTr').addEventListener('click',function(){clearTrails();toast('Trails cleared.');});
+$('cClose').addEventListener('click',function(){selId=-1;showCard();});
+$('cFollow').addEventListener('click',function(){
+  if(followId===selId){followId=-1;}else{followId=selId;}updFollow();
+});
+$('cRemove').addEventListener('click',function(){
+  var b=byId(selId);if(!b){return;}
+  bodies.splice(bodies.indexOf(b),1);if(followId===b.id){followId=-1;}
+  selId=-1;rebuild();showCard();toast(b.name+' removed.');
+});
+$('cMass').addEventListener('change',function(){var b=byId(selId);if(!b||!this.value){return;}setMass(b,CK[this.value].m);toast(b.name+' now has the mass of '+theName(CK[this.value].n)+'.');});
+$('cMul').addEventListener('click',function(){var b=byId(selId);if(b){setMass(b,b.m/EM*10);}});
+$('cDiv').addEventListener('click',function(){var b=byId(selId);if(b){setMass(b,b.m/EM/10);}});
+
+/* ---------- touch: one finger pans/taps, two fingers pinch-zoom or tilt ---------- */
+var tc=null;
+function hyp(a,b){return Math.sqrt((a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y));}
+function startTwo(a,b){
+  var mx=(a.x+b.x)/2,my=(a.y+b.y)/2,w=s2w(mx,my);
+  tc={mode:'two',d0:Math.max(10,hyp(a,b)),s0:cam.s,wx:w[0],wy:w[1],my0:my,ay0:a.y,by0:b.y,t0:tilt};
+}
+function onStart(list){
+  if(placing){if(list.length===1){placeStart(list[0].x,list[0].y);}return;}
+  if(list.length===1){tc={mode:'tap',x0:list[0].x,y0:list[0].y,lx:list[0].x,ly:list[0].y};}
+  else if(list.length>=2){startTwo(list[0],list[1]);}
+}
+function onMove(list){
+  var a,b,d,mx,my,p,da,db;
+  if(placing){if(placing.stage==='drag'&&list.length>=1){placeMove(list[0].x,list[0].y);}return;}
+  if(!tc){return;}
+  if(list.length>=2&&(tc.mode==='two'||tc.mode==='pinch'||tc.mode==='tilt')){
+    a=list[0];b=list[1];d=hyp(a,b);mx=(a.x+b.x)/2;my=(a.y+b.y)/2;
+    if(tc.mode==='two'){
+      da=a.y-tc.ay0;db=b.y-tc.by0;
+      if(Math.abs(d-tc.d0)>24){tc.mode='pinch';cam.auto=false;}
+      else if(Math.abs(da)>12&&Math.abs(db)>12&&da*db>0){tc.mode='tilt';tc.my0=my;tc.t0=tilt;}
+      else{return;}
+    }
+    if(tc.mode==='pinch'){
+      cam.s=clampS(tc.s0*d/tc.d0);
+      if(followId<0){cam.x=tc.wx-(mx-vcx)/cam.s;cam.y=tc.wy+(my-vcy)/cam.s;}
+    }else if(tc.mode==='tilt'){setTilt(tc.t0-(my-tc.my0)*0.4);}
+  }else if(list.length===1){
+    p=list[0];
+    if(tc.mode==='tap'&&Math.abs(p.x-tc.x0)+Math.abs(p.y-tc.y0)>10){tc.mode='pan';cam.auto=false;followId=-1;updFollow();}
+    if(tc.mode==='pan'){cam.x-=(p.x-tc.lx)/cam.s;cam.y+=(p.y-tc.ly)/cam.s;}
+    tc.lx=p.x;tc.ly=p.y;
+  }
+}
+function onEnd(list){
+  if(placing){if(list.length===0&&placing.stage==='drag'){placeEnd();}return;}
+  if(!tc){return;}
+  if(list.length===0){if(tc.mode==='tap'){selectAt(tc.x0,tc.y0);}tc=null;}
+  else if(list.length===1){tc={mode:'pan',x0:list[0].x,y0:list[0].y,lx:list[0].x,ly:list[0].y};}
+}
+function tl(e){var a=[],i;for(i=0;i<e.touches.length;i++){a.push({x:e.touches[i].clientX,y:e.touches[i].clientY});}return a;}
+cv.addEventListener('touchstart',function(e){e.preventDefault();onStart(tl(e));},{passive:false});
+cv.addEventListener('touchmove',function(e){e.preventDefault();onMove(tl(e));},{passive:false});
+cv.addEventListener('touchend',function(e){e.preventDefault();onEnd(tl(e));},{passive:false});
+cv.addEventListener('touchcancel',function(e){e.preventDefault();onEnd(tl(e));},{passive:false});
+var mdown=false;
+cv.addEventListener('mousedown',function(e){mdown=true;onStart([{x:e.clientX,y:e.clientY}]);});
+window.addEventListener('mousemove',function(e){if(mdown){onMove([{x:e.clientX,y:e.clientY}]);}});
+window.addEventListener('mouseup',function(){if(mdown){mdown=false;onEnd([]);}});
+cv.addEventListener('wheel',function(e){
+  e.preventDefault();
+  if(e.shiftKey){setTilt(tilt+e.deltaY*0.1);return;}
+  var w=s2w(e.clientX,e.clientY);cam.auto=false;
+  cam.s=clampS(cam.s*Math.exp(-e.deltaY*0.0015));
+  if(followId<0){cam.x=w[0]-(e.clientX-vcx)/cam.s;cam.y=w[1]+(e.clientY-vcy)/cam.s;}
+},{passive:false});
+
+function resize(){
+  DPR=Math.min(window.devicePixelRatio||1,3);W=window.innerWidth;H=window.innerHeight;
+  cv.width=Math.ceil(W*DPR);cv.height=Math.ceil(H*DPR);makeStars();measure();
+}
+window.addEventListener('resize',resize);
+window.addEventListener('orientationchange',function(){setTimeout(resize,250);});
+
+/* ---------- loop ---------- */
+var lastT=0,uiT=0;
+function frame(t){
+  var dtR=lastT?(t-lastT)/1000:0;lastT=t;
+  if(dtR>0.05){dtR=0.05;}if(dtR<0){dtR=0;}
+  if(running&&!placing&&bodies.length>0){advance(rate*dtR);}
+  layout();
+  measure();
+  if(!placing){autoCam(dtR);}
+  draw(dtR);
+  uiT+=dtR;
+  if(uiT>0.25){uiT=0;updTop();updSpeedLabel();if(selId>=0){updCard();}}
+  requestAnimationFrame(frame);
+}
+document.addEventListener('visibilitychange',function(){lastT=0;});
+
+resize();
+buildScenes();
+setTilt(0);
+loadScene(0);
+updPlay();updTop();
+toast('Tap any object for its orbit data. Drag two fingers up or down (or use the Tilt slider) to see the solar system in 3D.');
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
